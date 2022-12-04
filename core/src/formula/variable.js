@@ -11,6 +11,9 @@ Object.assign(Var.prototype, {
     toString() {
         return this.id
     },
+    /**
+     * Creates a copy of this variable with specified changes.
+     */
     with(changes = {}) {
         return new this.constructor({...this, ...changes})
     }
