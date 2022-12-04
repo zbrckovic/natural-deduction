@@ -185,12 +185,30 @@ export default class NaturalDeductionListener extends antlr4.tree.ParseTreeListe
 	}
 
 
-	// Enter a parse tree produced by NaturalDeductionParser#terms.
-	enterTerms(ctx) {
+	// Enter a parse tree produced by NaturalDeductionParser#termList.
+	enterTermList(ctx) {
 	}
 
-	// Exit a parse tree produced by NaturalDeductionParser#terms.
-	exitTerms(ctx) {
+	// Exit a parse tree produced by NaturalDeductionParser#termList.
+	exitTermList(ctx) {
+	}
+
+
+	// Enter a parse tree produced by NaturalDeductionParser#bracketedTerms.
+	enterBracketedTerms(ctx) {
+	}
+
+	// Exit a parse tree produced by NaturalDeductionParser#bracketedTerms.
+	exitBracketedTerms(ctx) {
+	}
+
+
+	// Enter a parse tree produced by NaturalDeductionParser#term.
+	enterTerm(ctx) {
+	}
+
+	// Exit a parse tree produced by NaturalDeductionParser#term.
+	exitTerm(ctx) {
 	}
 
 

@@ -34,11 +34,13 @@ compUnaryFormula: operator=NEGATION formula;
 binaryOperator: operator=(CONDITIONAL | DISJUNCTION | CONJUNCTION | BICONDITIONAL);
 
 quantFormula: uniFormula | exiFormula;
-uniFormula: lParen='(' indVar=IND_VAR rParen=')' formula;
-exiFormula: lBracket='[' indVar=IND_VAR rBracket=']' formula;
+uniFormula: lParen='(' indVar=TERM_VAR rParen=')' formula;
+exiFormula: lBracket='[' indVar=TERM_VAR rBracket=']' formula;
 
-atomicFormula: predVar=(RULE_PREMISE | RULE_THEOREM | RULE_EXPLOSION | PRED_VAR) terms?;
-terms: indVars+=IND_VAR+ | lParen='(' indVars+=IND_VAR (',' indVars+=IND_VAR)* rParen=')';
+atomicFormula: predVar=(RULE_PREMISE | RULE_THEOREM | RULE_EXPLOSION | PRED_VAR) termList?;
+termList: indVars+=TERM_VAR+ | bracketedTerms;
+bracketedTerms: lParen='(' terms+=term (',' terms+=term)* rParen=')';
+term: TERM_VAR bracketedTerms?;
 
 STRING: '"' (ESC|.)*? '"' ;
 fragment
@@ -64,7 +66,7 @@ RULE_EXPLOSION: 'XP';
 RULE_REPETITION: 'RP';
 
 PRED_VAR: [A-Z][0-9]*; // Predicate variable
-IND_VAR: [a-z][0-9]*; // Individual variable
+TERM_VAR: [a-z][0-9]*; // Individual variable
 
 NUMBER: [1-9][0-9]*;
 

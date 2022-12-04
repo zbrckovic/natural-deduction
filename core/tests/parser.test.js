@@ -20,6 +20,11 @@ describe("parser", () => {
         parser.rootFormula()
     })
 
+    it("succeeds for valid formula with function and indVar list", () => {
+        const parser = createParser("F(x, f(x)) -> Gxy");
+        parser.rootFormula()
+    })
+
     it("succeeds for valid deduction", () => {
         const parser = createParser(`
             1) [x] (y) Fyx : PR;

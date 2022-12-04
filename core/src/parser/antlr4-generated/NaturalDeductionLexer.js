@@ -203,7 +203,7 @@ export default class NaturalDeductionLexer extends antlr4.Lexer {
                           "RULE_IFF_IN", "RULE_IFF_OUT", "RULE_AND_IN", 
                           "RULE_AND_OUT", "RULE_OR_IN", "RULE_OR_OUT", "RULE_NOT_IN", 
                           "RULE_NOT_OUT", "RULE_EXPLOSION", "RULE_REPETITION", 
-                          "PRED_VAR", "IND_VAR", "NUMBER", "NEWLINE", "WS", 
+                          "PRED_VAR", "TERM_VAR", "NUMBER", "NEWLINE", "WS", 
                           "NEGATION", "CONJUNCTION", "DISJUNCTION", "CONDITIONAL", 
                           "BICONDITIONAL", "UNKNOWN" ];
 	static ruleNames = [ "T__0", "T__1", "T__2", "T__3", "T__4", "T__5", "T__6", 
@@ -213,7 +213,7 @@ export default class NaturalDeductionLexer extends antlr4.Lexer {
                       "RULE_IF_OUT", "RULE_IFF_IN", "RULE_IFF_OUT", "RULE_AND_IN", 
                       "RULE_AND_OUT", "RULE_OR_IN", "RULE_OR_OUT", "RULE_NOT_IN", 
                       "RULE_NOT_OUT", "RULE_EXPLOSION", "RULE_REPETITION", 
-                      "PRED_VAR", "IND_VAR", "NUMBER", "NEWLINE", "WS", 
+                      "PRED_VAR", "TERM_VAR", "NUMBER", "NEWLINE", "WS", 
                       "NEGATION", "CONJUNCTION", "DISJUNCTION", "CONDITIONAL", 
                       "BICONDITIONAL", "UNKNOWN" ];
 
@@ -261,7 +261,7 @@ NaturalDeductionLexer.RULE_NOT_OUT = 30;
 NaturalDeductionLexer.RULE_EXPLOSION = 31;
 NaturalDeductionLexer.RULE_REPETITION = 32;
 NaturalDeductionLexer.PRED_VAR = 33;
-NaturalDeductionLexer.IND_VAR = 34;
+NaturalDeductionLexer.TERM_VAR = 34;
 NaturalDeductionLexer.NUMBER = 35;
 NaturalDeductionLexer.NEWLINE = 36;
 NaturalDeductionLexer.WS = 37;

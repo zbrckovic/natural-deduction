@@ -126,8 +126,20 @@ export default class NaturalDeductionVisitor extends antlr4.tree.ParseTreeVisito
 	}
 
 
-	// Visit a parse tree produced by NaturalDeductionParser#terms.
-	visitTerms(ctx) {
+	// Visit a parse tree produced by NaturalDeductionParser#termList.
+	visitTermList(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
+	// Visit a parse tree produced by NaturalDeductionParser#bracketedTerms.
+	visitBracketedTerms(ctx) {
+	  return this.visitChildren(ctx);
+	}
+
+
+	// Visit a parse tree produced by NaturalDeductionParser#term.
+	visitTerm(ctx) {
 	  return this.visitChildren(ctx);
 	}
 

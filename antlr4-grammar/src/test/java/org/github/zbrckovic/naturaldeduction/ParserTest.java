@@ -26,6 +26,12 @@ public class ParserTest {
     }
 
     @Test
+    void succeedsForValidFormulaWithFunctionAndIndVarList() {
+        var parser = createParser("F(x, f(x)) -> Gxy");
+        assertDoesNotThrow(parser::rootFormula);
+    }
+
+    @Test
     void succeedsForValidDeduction() {
         var parser = createParser("""
                 1) [x] (y) Fyx : PR;
