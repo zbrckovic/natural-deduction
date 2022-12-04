@@ -1,0 +1,26 @@
+{
+  "name": "core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">=18.12.0",
+    "npm": ">=8.19.2"
+  },
+  "author": "Željko Brcković",
+  "license": "MIT",
+  "dependencies": {
+    "antlr4": "^4.9.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/preset-env": "^7.20.2",
+    "@types/jest": "^29.2.3",
+    "babel-jest": "^29.3.1",
+    "eslint": "^8.29.0",
+    "jest": "^29.3.1"
+  }
+}
