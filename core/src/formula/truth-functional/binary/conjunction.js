@@ -6,6 +6,6 @@ export function Conjunction ({ lFormula, rFormula }) {
 
 Object.assign(Conjunction.prototype, BinaryFormula.prototype, {
   accept (visitor) {
-    visitor.visitConjunction(this)
+    return visitor.visitConjunction(this)
   }
 })

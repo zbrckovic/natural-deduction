@@ -1,9 +1,9 @@
 /**
  * Variable
  *
- * It represents either term variable or predicate variable.
+ * It represents either a term variable or a predicate variable.
  * @param id - The unique identifier of this variable inside some context.
- * @param arity - The number of terms required to form an expression.
+ * @param arity - The number of terms required to form an expression (term).
  * @constructor
  */
 export function Var ({ id, arity = 0 }) {

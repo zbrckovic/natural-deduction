@@ -6,6 +6,6 @@ export function Conditional ({ lFormula, rFormula }) {
 
 Object.assign(Conditional.prototype, BinaryFormula.prototype, {
   accept (visitor) {
-    visitor.visitConditional(this)
+    return visitor.visitConditional(this)
   }
 })

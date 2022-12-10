@@ -6,4 +6,8 @@ export function AtomicFormula ({ predVar, terms = [] }) {
   this.terms = terms
 }
 
-Object.assign(AtomicFormula.prototype, Formula.prototype)
+Object.assign(AtomicFormula.prototype, Formula.prototype, {
+  accept (visitor) {
+    return visitor.visitAtomicFormula(this)
+  }
+})

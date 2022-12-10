@@ -6,6 +6,6 @@ export function Biconditional ({ lFormula, rFormula }) {
 
 Object.assign(Biconditional.prototype, BinaryFormula.prototype, {
   accept (visitor) {
-    visitor.visitBiconditional(this)
+    return visitor.visitBiconditional(this)
   }
 })

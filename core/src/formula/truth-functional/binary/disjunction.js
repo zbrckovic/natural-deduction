@@ -6,6 +6,6 @@ export function Disjunction ({ lFormula, rFormula }) {
 
 Object.assign(Disjunction.prototype, BinaryFormula.prototype, {
   accept (visitor) {
-    visitor.visitDisjunction(this)
+    return visitor.visitDisjunction(this)
   }
 })
