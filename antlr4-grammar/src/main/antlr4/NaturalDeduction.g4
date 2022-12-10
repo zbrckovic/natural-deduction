@@ -40,7 +40,7 @@ exiFormula: lBracket='[' indVar=TERM_VAR rBracket=']' formula;
 atomicFormula: predVar=(RULE_PREMISE | RULE_THEOREM | RULE_EXPLOSION | PRED_VAR) termList?;
 termList: indVars+=TERM_VAR+ | bracketedTerms;
 bracketedTerms: lParen='(' terms+=term (',' terms+=term)* rParen=')';
-term: TERM_VAR bracketedTerms?;
+term: termVar=TERM_VAR bracketedTerms?;
 
 STRING: '"' (ESC|.)*? '"' ;
 fragment

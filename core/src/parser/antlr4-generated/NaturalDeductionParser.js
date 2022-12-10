@@ -966,7 +966,7 @@ export default class NaturalDeductionParser extends antlr4.Parser {
 	    try {
 	        this.enterOuterAlt(localctx, 1);
 	        this.state = 179;
-	        this.match(NaturalDeductionParser.TERM_VAR);
+	        localctx.termVar = this.match(NaturalDeductionParser.TERM_VAR);
 	        this.state = 181;
 	        this._errHandler.sync(this);
 	        _la = this._input.LA(1);
@@ -2310,6 +2310,7 @@ class TermContext extends antlr4.ParserRuleContext {
         super(parent, invokingState);
         this.parser = parser;
         this.ruleIndex = NaturalDeductionParser.RULE_term;
+        this.termVar = null; // Token
     }
 
 	TERM_VAR() {

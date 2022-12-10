@@ -1,32 +1,32 @@
-import { createParser } from './parser'
+import { createAntlr4Parser } from './antlr4-parser'
 
 describe('parser', () => {
   it('throws for empty', () => {
-    const parser = createParser('')
+    const parser = createAntlr4Parser('')
     expect(() => {
       parser.rootFormula()
     }).toThrow()
   })
 
   it('throws for incomplete formula', () => {
-    const parser = createParser('A ->')
+    const parser = createAntlr4Parser('A ->')
     expect(() => {
       parser.rootFormula()
     }).toThrow()
   })
 
   it('succeeds for valid formula', () => {
-    const parser = createParser('(F2yz -> ~G2zy) & [x] F2zx')
+    const parser = createAntlr4Parser('(F2yz -> ~G2zy) & [x] F2zx')
     parser.rootFormula()
   })
 
   it('succeeds for valid formula with function and indVar list', () => {
-    const parser = createParser('F(x, f(x)) -> Gxy')
+    const parser = createAntlr4Parser('F(x, f(x)) -> Gxy')
     parser.rootFormula()
   })
 
   it('succeeds for valid deduction', () => {
-    const parser = createParser(`
+    const parser = createAntlr4Parser(`
             1) [x] (y) Fyx : PR;
             2) (y) Fya     : -E 1;
             3) Fba         : -A 2;
