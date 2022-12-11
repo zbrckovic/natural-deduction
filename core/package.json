@@ -13,7 +13,8 @@
   "author": "Željko Brcković",
   "license": "MIT",
   "dependencies": {
-    "antlr4": "^4.9.3"
+    "antlr4": "^4.9.3",
+    "lodash.isequalwith": "^4.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",

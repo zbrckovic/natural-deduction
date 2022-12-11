@@ -1,7 +1,10 @@
 import NaturalDeductionVisitor from './antlr4-generated/NaturalDeductionVisitor'
 import { AtomicFormula, Term, Var } from '../formula'
+import { VariableTracker } from './variable-tracker'
 
 export class AstVisitor extends NaturalDeductionVisitor {
+  variableTracker = new VariableTracker()
+
   // region Formula
   visitRootFormula (ctx) {
     if (ctx.atomicFormula() !== null) {
@@ -13,6 +16,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     const predVarId = ctx.predVar.text
     const terms = this._extractTermsFromAtomicFormulaCtx(ctx)
     const predVar = new Var({ id: predVarId, arity: terms.length })
+    this.variableTracker.register(predVar)
     return new AtomicFormula({ predVar, terms })
   }
 
@@ -22,6 +26,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     return ctx.indVars.map(token => {
       const id = token.text
       const termVar = new Var({ id })
+      this.variableTracker.register(termVar)
       return new Term({ termVar })
     })
   }
@@ -35,6 +40,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
 
     const terms = this._extractTermsFromTermCtx(ctx)
     const termVar = new Var({ id: termId, arity: terms.length })
+    this.variableTracker.register(termVar)
 
     return new Term({ termVar, terms })
   }

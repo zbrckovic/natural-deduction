@@ -1,0 +1,21 @@
+import { equals } from '../utilities'
+import { createError, ErrorCode } from '../errors'
+
+export class VariableTracker {
+  idToVar = {}
+
+  register (variable) {
+    const existingVariable = this.idToVar[variable.id]
+
+    if (existingVariable === undefined) {
+      this.idToVar[variable.id] = variable
+    } else {
+      if (!equals(existingVariable, variable)) {
+        throw createError(
+          ErrorCode.VARIABLE_COLLISION,
+          `Cannot register variable ${variable} as it has the same id as already registered ` +
+          `variable ${existingVariable}`)
+      }
+    }
+  }
+}

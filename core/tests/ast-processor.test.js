@@ -1,8 +1,13 @@
 import { AtomicFormula, Term, Var } from '../src/formula'
-import { createAntlr4Parser } from './antlr4-parser'
-import { AstVisitor } from '../src/parser/ast-visitor'
+import { Parser } from './parser'
+import { createErrorRegexForTest, ErrorCode } from '../src/errors'
 
 describe('ast processor', () => {
+  let parser
+  beforeEach(() => {
+    parser = new Parser()
+  })
+
   test.each([
     [
       'A',
@@ -39,10 +44,14 @@ describe('ast processor', () => {
       })
     ]
   ])('produces expected formula for "%s"', (formulaTxt, expectedFormula) => {
-    const parser = createAntlr4Parser(formulaTxt)
-    const ast = parser.rootFormula()
-    const visitor = new AstVisitor()
-    const formula = visitor.visitRootFormula(ast)
+    const formula = parser.parseRootFormula(formulaTxt)
     expect(formula).toEqual(expectedFormula)
+  })
+
+  it('throws on variable collision', () => {
+    parser.parseRootFormula('F')
+    expect(() => {
+      parser.parseRootFormula('Fx')
+    }).toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_COLLISION))
   })
 })
