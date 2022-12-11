@@ -1,6 +1,10 @@
 import { equals } from '../utilities'
 import { createError, ErrorCode } from '../errors'
 
+/**
+ * Tracks variables and takes care not to allow registration of conflicting variables: unequal
+ * variables with the same id.
+ */
 export class VariableTracker {
   idToVar = {}
 
