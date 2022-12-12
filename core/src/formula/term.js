@@ -9,10 +9,10 @@ const termBehavior = {
 /**
  * Creates a term.
  *
- * It can be either simple like a single individual variable or a complex one like a function with
+ * It can be either simple like a single individual variable or complex like a function with
  * arguments.
  * @param termVar - A term variable or an id of an individual variable.
- * @param terms - A list where each item is either term or an id of an individual variable.
+ * @param terms - A list where each item is either a term or an id of an individual variable.
  */
 export function term (termVar, ...terms) {
   if (typeof termVar === 'string') {

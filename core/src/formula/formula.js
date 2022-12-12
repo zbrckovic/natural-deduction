@@ -8,7 +8,7 @@ export function not (formula) {
 
 /**
  * Creates a universally quantified formula.
- * @param indVar - A term variable or an id of an individual variable.
+ * @param indVar - An individual variable or an id of one.
  * @param formula
  */
 export function all (indVar, formula) {
@@ -20,7 +20,7 @@ export function all (indVar, formula) {
 
 /**
  * Creates an existentially quantified formula.
- * @param indVar - A term variable or an id of an individual variable.
+ * @param indVar - An individual variable or an id of one.
  * @param formula
  */
 export function some (indVar, formula) {
@@ -50,9 +50,9 @@ const formulaBehavior = {
 }
 
 /**
- * Creates an atomic formula
- * @param predVar - A predicate variable or an id of a predicate variable.
- * @param terms - A list where each item is either term or an id of an individual variable.
+ * Creates an atomic formula.
+ * @param predVar - A predicate variable or an id of one.
+ * @param terms - A list where each item is either a term or an id of an individual variable.
  */
 export function formula (predVar, ...terms) {
   if (typeof predVar === 'string') {
