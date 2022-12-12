@@ -1,6 +1,6 @@
 import { variable } from './variable'
 
-const termBehavior = {
+const termTrait = {
   accept (visitor) {
     return visitor.visitTerm(this)
   }
@@ -15,14 +15,14 @@ const termBehavior = {
  * @param terms - A list where each item is either a term or an id of an individual variable.
  */
 export function term (termVar, ...terms) {
-  if (typeof termVar === 'string') {
-    termVar = variable(termVar, terms.length)
-  }
-  terms = terms.map(t => typeof t === 'string' ? term(t) : t)
-  const result = Object.create(termBehavior)
-  Object.assign(result, {
-    termVar,
-    terms: Object.freeze([...terms])
+  const realTermVar = typeof termVar === 'string' ? variable(termVar, terms.length) : termVar
+  const realTerms = terms.map(t => typeof t === 'string' ? term(t) : t)
+
+  const that = Object.create(termTrait)
+  Object.assign(that, {
+    termVar: realTermVar,
+    terms: Object.freeze(realTerms)
   })
-  return result
+
+  return that
 }

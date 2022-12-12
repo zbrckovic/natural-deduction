@@ -1,6 +1,7 @@
 import { equals } from '../src/utilities'
 
 expect.extend({
+  /** Equality checking matcher which takes into account existence of `equals` methods. */
   toDeepEqual (actual, expected) {
     return {
       pass: equals(actual, expected),

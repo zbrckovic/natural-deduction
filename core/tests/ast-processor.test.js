@@ -1,6 +1,6 @@
 import { formula, term, all, some } from '../src/formula'
 import { Parser } from './parser'
-import { createErrorRegexForTest, ErrorCode } from '../src/errors'
+import { errorRegexForTest, ErrorCode } from '../src/errors'
 import { not } from '../src/formula/formula'
 
 describe('ast processor', () => {
@@ -66,6 +66,6 @@ describe('ast processor', () => {
     parser.parseRootFormula('F')
     expect(() => {
       parser.parseRootFormula('Fx')
-    }).toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_COLLISION))
+    }).toThrow(errorRegexForTest(ErrorCode.VARIABLE_COLLISION))
   })
 })

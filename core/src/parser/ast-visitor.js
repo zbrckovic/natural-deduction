@@ -4,9 +4,7 @@ import NaturalDeductionLexer from './antlr4-generated/NaturalDeductionLexer'
 import { VariableTracker } from './variable-tracker'
 import { not } from '../formula/formula'
 
-/**
- * Visits AST (abstract syntax tree) produced by ANTLR4 visitor and constructs domain objects.
- */
+/** Visits AST (abstract syntax tree) produced by ANTLR4 and constructs domain objects. */
 export class AstVisitor extends NaturalDeductionVisitor {
   variableTracker = new VariableTracker()
 
