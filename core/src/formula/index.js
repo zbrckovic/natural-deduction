@@ -1,10 +1,13 @@
-export { Var } from './variable'
-export { Term } from './term'
-export { AtomicFormula } from './formula'
-export { Negation } from './formula'
-export { Biconditional } from './formula'
-export { Conditional } from './formula'
-export { Conjunction } from './formula'
-export { Disjunction } from './formula'
-export { UniversalFormula } from './formula'
-export { ExistentialFormula } from './formula'
+export { variable } from './variable'
+export { term } from './term'
+export {
+  all,
+  some,
+  formula,
+  unaryFormula,
+  binaryFormula,
+  quantifiedFormula,
+  UnaryOperator,
+  BinaryOperator,
+  Quantifier
+} from './formula'

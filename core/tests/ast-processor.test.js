@@ -1,7 +1,7 @@
-import { AtomicFormula, Conjunction, Term, Var } from '../src/formula'
+import { formula, term, all, some } from '../src/formula'
 import { Parser } from './parser'
 import { createErrorRegexForTest, ErrorCode } from '../src/errors'
-import { BinaryFormula, BinaryOperator, UnaryFormula, UnaryOperator } from '../src/formula/formula'
+import { not } from '../src/formula/formula'
 
 describe('ast processor', () => {
   let parser
@@ -10,100 +10,56 @@ describe('ast processor', () => {
   })
 
   test.each([
-    [
-      'A',
-      new AtomicFormula({
-        predVar: new Var({ id: 'A' })
-      })
+    ['A',
+      formula('A')
     ],
     [
       'Fx',
-      new AtomicFormula({
-        predVar: new Var({ id: 'F', arity: 1 }),
-        terms: [
-          new Term({ termVar: new Var({ id: 'x' }) })
-        ]
-      })
+      formula('F', 'x')
     ],
     [
       'F(x)',
-      new AtomicFormula({
-        predVar: new Var({ id: 'F', arity: 1 }),
-        terms: [
-          new Term({ termVar: new Var({ id: 'x' }) })
-        ]
-      })
+      formula('F', 'x')
     ],
     [
       'F(x, y)',
-      new AtomicFormula({
-        predVar: new Var({ id: 'F', arity: 2 }),
-        terms: [
-          new Term({ termVar: new Var({ id: 'x' }) }),
-          new Term({ termVar: new Var({ id: 'y' }) })
-        ]
-      })
+      formula('F', 'x', 'y')
+    ],
+    [
+      'F(x, f(y))',
+      formula('F', 'x', term('f', 'y'))
     ],
     [
       '~A',
-      new UnaryFormula({
-        operator: UnaryOperator.NEGATION,
-        formula: new AtomicFormula({
-          predVar: new Var({ id: 'A' })
-        })
-      })
+      not(formula('A'))
     ],
     [
       'A & B',
-      new BinaryFormula({
-        operator: BinaryOperator.CONJUNCTION,
-        lFormula: new AtomicFormula({
-          predVar: new Var({ id: 'A' })
-        }),
-        rFormula: new AtomicFormula({
-          predVar: new Var({ id: 'B' })
-        })
-      })
+      formula('A').and(formula('B'))
     ],
     [
       'A | B',
-      new BinaryFormula({
-        operator: BinaryOperator.DISJUNCTION,
-        lFormula: new AtomicFormula({
-          predVar: new Var({ id: 'A' })
-        }),
-        rFormula: new AtomicFormula({
-          predVar: new Var({ id: 'B' })
-        })
-      })
+      formula('A').or(formula('B'))
     ],
     [
       'A -> B',
-      new BinaryFormula({
-        operator: BinaryOperator.CONDITIONAL,
-        lFormula: new AtomicFormula({
-          predVar: new Var({ id: 'A' })
-        }),
-        rFormula: new AtomicFormula({
-          predVar: new Var({ id: 'B' })
-        })
-      })
+      formula('A').then(formula('B'))
     ],
     [
       'A <-> B',
-      new BinaryFormula({
-        operator: BinaryOperator.BICONDITIONAL,
-        lFormula: new AtomicFormula({
-          predVar: new Var({ id: 'A' })
-        }),
-        rFormula: new AtomicFormula({
-          predVar: new Var({ id: 'B' })
-        })
-      })
+      formula('A').onlyThen(formula('B'))
+    ],
+    [
+      '(x) A',
+      all('x', formula('A'))
+    ],
+    [
+      '[x] A',
+      some('x', formula('A'))
     ]
   ])('produces expected formula for "%s"', (formulaTxt, expectedFormula) => {
     const formula = parser.parseRootFormula(formulaTxt)
-    expect(formula).toEqual(expectedFormula)
+    expect(formula).toDeepEqual(expectedFormula)
   })
 
   it('throws on variable collision', () => {

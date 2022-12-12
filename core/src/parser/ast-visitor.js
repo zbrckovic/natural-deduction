@@ -1,13 +1,8 @@
 import NaturalDeductionVisitor from './antlr4-generated/NaturalDeductionVisitor'
-import {
-  AtomicFormula,
-  Negation,
-  Term,
-  Var
-} from '../formula'
-import { VariableTracker } from './variable-tracker'
+import { formula, binaryFormula, BinaryOperator, term, variable, all, some } from '../formula'
 import NaturalDeductionLexer from './antlr4-generated/NaturalDeductionLexer'
-import { BinaryFormula, BinaryOperator, UnaryFormula, UnaryOperator } from '../formula/formula'
+import { VariableTracker } from './variable-tracker'
+import { not } from '../formula/formula'
 
 /**
  * Visits AST (abstract syntax tree) produced by ANTLR4 visitor and constructs domain objects.
@@ -73,7 +68,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     const lFormula = this.visitFormula(ctx.lFormula)
     const rFormula = this.visitFormula(ctx.rFormula)
     const operator = binaryOperatorsMap[operatorTokenType]
-    return new BinaryFormula({ operator, lFormula, rFormula })
+    return binaryFormula(operator, lFormula, rFormula)
   }
 
   visitBinaryOperator (ctx) {
@@ -82,15 +77,35 @@ export class AstVisitor extends NaturalDeductionVisitor {
 
   visitCompUnaryFormula (ctx) {
     const formula = this.visitFormula(ctx.formula())
-    return new UnaryFormula({ operator: UnaryOperator.NEGATION, formula })
+    return not(formula)
+  }
+
+  visitQuantFormula (ctx) {
+    if (ctx.uniFormula() !== null) {
+      return this.visitUniFormula(ctx.uniFormula())
+    }
+    if (ctx.exiFormula() !== null) {
+      return this.visitExiFormula(ctx.exiFormula())
+    }
+    throw new Error('Invalid context') // Shouldn't happen
+  }
+
+  visitUniFormula (ctx) {
+    const formula = this.visitFormula(ctx.formula())
+    return all(ctx.indVar.text, formula)
+  }
+
+  visitExiFormula (ctx) {
+    const formula = this.visitFormula(ctx.formula())
+    return some(ctx.indVar.text, formula)
   }
 
   visitAtomicFormula (ctx) {
     const predVarId = ctx.predVar.text
     const terms = this._extractTermsFromAtomicFormulaCtx(ctx)
-    const predVar = new Var({ id: predVarId, arity: terms.length })
+    const predVar = variable(predVarId, terms.length)
     this.variableTracker.register(predVar)
-    return new AtomicFormula({ predVar, terms })
+    return formula(predVar, ...terms)
   }
 
   visitTermList (ctx) {
@@ -98,9 +113,9 @@ export class AstVisitor extends NaturalDeductionVisitor {
 
     return ctx.indVars.map(token => {
       const id = token.text
-      const termVar = new Var({ id })
+      const termVar = variable(id)
       this.variableTracker.register(termVar)
-      return new Term({ termVar })
+      return term(termVar)
     })
   }
 
@@ -112,10 +127,10 @@ export class AstVisitor extends NaturalDeductionVisitor {
     const termId = ctx.termVar.text
 
     const terms = this._extractTermsFromTermCtx(ctx)
-    const termVar = new Var({ id: termId, arity: terms.length })
+    const termVar = variable(termId, terms.length)
     this.variableTracker.register(termVar)
 
-    return new Term({ termVar, terms })
+    return term(termVar, ...terms)
   }
 
   _extractTermsFromAtomicFormulaCtx (ctx) {
