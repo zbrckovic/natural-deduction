@@ -1,7 +1,7 @@
 import { createAntlr4Parser } from './antlr4-parser'
 import { AstVisitor } from '../src/parser/ast-visitor'
 
-export class Parser {
+class Parser {
   visitor = new AstVisitor()
 
   parseRootFormula (formulaTxt) {
@@ -9,4 +9,14 @@ export class Parser {
     const ast = antlr4Parser.rootFormula()
     return this.visitor.visitRootFormula(ast)
   }
+
+  parseTerm (termTxt) {
+    const antlr4Parser = createAntlr4Parser(termTxt)
+    const ast = antlr4Parser.term()
+    return this.visitor.visitTerm(ast)
+  }
+}
+
+export function createParser () {
+  return new Parser()
 }

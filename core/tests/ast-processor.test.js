@@ -1,61 +1,60 @@
-import { formula, term, all, some } from '../src/formula'
-import { Parser } from './parser'
-import { errorRegexForTest, ErrorCode } from '../src/errors'
-import { not } from '../src/formula/formula'
+import { all, createAtomicFormula, not, some, createTerm } from '../src/formula'
+import { createParser } from './parser'
+import { ErrorCode, errorRegexForTest } from '../src/errors'
 
 describe('ast processor', () => {
   let parser
   beforeEach(() => {
-    parser = new Parser()
+    parser = createParser()
   })
 
   test.each([
     ['A',
-      formula('A')
+      createAtomicFormula('A')
     ],
     [
       'Fx',
-      formula('F', 'x')
+      createAtomicFormula('F', 'x')
     ],
     [
       'F(x)',
-      formula('F', 'x')
+      createAtomicFormula('F', 'x')
     ],
     [
       'F(x, y)',
-      formula('F', 'x', 'y')
+      createAtomicFormula('F', 'x', 'y')
     ],
     [
       'F(x, f(y))',
-      formula('F', 'x', term('f', 'y'))
+      createAtomicFormula('F', 'x', createTerm('f', 'y'))
     ],
     [
       '~A',
-      not(formula('A'))
+      not(createAtomicFormula('A'))
     ],
     [
       'A & B',
-      formula('A').and(formula('B'))
+      createAtomicFormula('A').and(createAtomicFormula('B'))
     ],
     [
       'A | B',
-      formula('A').or(formula('B'))
+      createAtomicFormula('A').or(createAtomicFormula('B'))
     ],
     [
       'A -> B',
-      formula('A').then(formula('B'))
+      createAtomicFormula('A').then(createAtomicFormula('B'))
     ],
     [
       'A <-> B',
-      formula('A').onlyThen(formula('B'))
+      createAtomicFormula('A').onlyThen(createAtomicFormula('B'))
     ],
     [
       '(x) A',
-      all('x', formula('A'))
+      all('x', createAtomicFormula('A'))
     ],
     [
       '[x] A',
-      some('x', formula('A'))
+      some('x', createAtomicFormula('A'))
     ]
   ])('produces expected formula for "%s"', (formulaTxt, expectedFormula) => {
     const formula = parser.parseRootFormula(formulaTxt)

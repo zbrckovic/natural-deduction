@@ -1,8 +1,16 @@
 import NaturalDeductionVisitor from './antlr4-generated/NaturalDeductionVisitor'
-import { formula, binaryFormula, BinaryOperator, term, variable, all, some } from '../formula'
+import {
+  all,
+  BinaryOperator,
+  createAtomicFormula,
+  createBinaryFormula,
+  not,
+  some,
+  createTerm,
+  createVariable
+} from '../formula'
 import NaturalDeductionLexer from './antlr4-generated/NaturalDeductionLexer'
 import { VariableTracker } from './variable-tracker'
-import { not } from '../formula/formula'
 
 /** Visits AST (abstract syntax tree) produced by ANTLR4 and constructs domain objects. */
 export class AstVisitor extends NaturalDeductionVisitor {
@@ -58,7 +66,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
   }
 
   visitCompBinaryFormula (ctx) {
-    return super._visitCompBinaryFormula(ctx)
+    return this._visitCompBinaryFormula(ctx)
   }
 
   _visitCompBinaryFormula (ctx) {
@@ -66,7 +74,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     const lFormula = this.visitFormula(ctx.lFormula)
     const rFormula = this.visitFormula(ctx.rFormula)
     const operator = binaryOperatorsMap[operatorTokenType]
-    return binaryFormula(operator, lFormula, rFormula)
+    return createBinaryFormula(operator, lFormula, rFormula)
   }
 
   visitBinaryOperator (ctx) {
@@ -101,9 +109,9 @@ export class AstVisitor extends NaturalDeductionVisitor {
   visitAtomicFormula (ctx) {
     const predVarId = ctx.predVar.text
     const terms = this._extractTermsFromAtomicFormulaCtx(ctx)
-    const predVar = variable(predVarId, terms.length)
+    const predVar = createVariable(predVarId, terms.length)
     this.variableTracker.register(predVar)
-    return formula(predVar, ...terms)
+    return createAtomicFormula(predVar, ...terms)
   }
 
   visitTermList (ctx) {
@@ -111,9 +119,9 @@ export class AstVisitor extends NaturalDeductionVisitor {
 
     return ctx.indVars.map(token => {
       const id = token.text
-      const termVar = variable(id)
+      const termVar = createVariable(id)
       this.variableTracker.register(termVar)
-      return term(termVar)
+      return createTerm(termVar)
     })
   }
 
@@ -125,10 +133,10 @@ export class AstVisitor extends NaturalDeductionVisitor {
     const termId = ctx.termVar.text
 
     const terms = this._extractTermsFromTermCtx(ctx)
-    const termVar = variable(termId, terms.length)
+    const termVar = createVariable(termId, terms.length)
     this.variableTracker.register(termVar)
 
-    return term(termVar, ...terms)
+    return createTerm(termVar, ...terms)
   }
 
   _extractTermsFromAtomicFormulaCtx (ctx) {
