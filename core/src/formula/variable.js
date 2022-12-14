@@ -1,6 +1,12 @@
 const variableTrait = {
+  id () {
+    return this._id
+  },
+  arity () {
+    return this._arity
+  },
   toString () {
-    return this.id
+    return this._id
   }
 }
 
@@ -13,6 +19,6 @@ const variableTrait = {
  */
 export function variable (id, arity = 0) {
   const result = Object.create(variableTrait)
-  Object.assign(result, { id, arity })
-  return Object.freeze(result)
+  Object.assign(result, { _id: id, _arity: arity })
+  return result
 }

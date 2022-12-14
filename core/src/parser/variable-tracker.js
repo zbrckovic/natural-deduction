@@ -9,10 +9,10 @@ export class VariableTracker {
   idToVar = {}
 
   register (variable) {
-    const existingVariable = this.idToVar[variable.id]
+    const existingVariable = this.idToVar[variable.id()]
 
     if (existingVariable === undefined) {
-      this.idToVar[variable.id] = variable
+      this.idToVar[variable.id()] = variable
     } else {
       if (!equals(existingVariable, variable)) {
         throw error(

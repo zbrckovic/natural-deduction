@@ -1,6 +1,35 @@
 import { variable } from './variable'
 import { term } from './term'
 
+const formulaTrait = {
+  /** Creates a conjunctive formula. */
+  and (formula) {
+    return binaryFormula(BinaryOperator.CONJUNCTION, this, formula)
+  },
+  /** Creates a disjunctive formula. */
+  or (formula) {
+    return binaryFormula(BinaryOperator.DISJUNCTION, this, formula)
+  },
+  /** Creates a conditional formula. */
+  then (formula) {
+    return binaryFormula(BinaryOperator.CONDITIONAL, this, formula)
+  },
+  /** Creates a biconditional formula. */
+  onlyThen (formula) {
+    return binaryFormula(BinaryOperator.BICONDITIONAL, this, formula)
+  }
+}
+
+const atomicFormulaTrait = {
+  ...formulaTrait,
+  predVar () {
+    return this._predVar
+  },
+  terms () {
+    return this._terms
+  }
+}
+
 /**
  * Creates an atomic formula.
  * @param predVar - A predicate variable or an id of one.
@@ -10,13 +39,13 @@ export function formula (predVar, ...terms) {
   const realPredVar = typeof predVar === 'string' ? variable(predVar, terms.length) : predVar
   const realTerms = terms.map(t => typeof t === 'string' ? term(t) : t)
 
-  const that = Object.create(formulaTrait)
+  const that = Object.create(atomicFormulaTrait)
   Object.assign(that, {
-    predVar: realPredVar,
-    terms: Object.freeze(realTerms)
+    _predVar: realPredVar,
+    _terms: realTerms
   })
 
-  return Object.freeze(that)
+  return that
 }
 
 /** Creates a negative formula. */
@@ -44,36 +73,71 @@ export function some (indVar, formula) {
   return quantifiedFormula(Quantifier.EXISTENTIAL, realIndVar, formula)
 }
 
+const unaryFormulaTrait = {
+  ...formulaTrait,
+  operator () {
+    return this._operator
+  },
+  formula () {
+    return this._formula
+  }
+}
+
 export function unaryFormula (operator, formula) {
-  const that = Object.create(formulaTrait)
+  const that = Object.create(unaryFormulaTrait)
   Object.assign(that, {
-    operator,
-    formula
+    _operator: operator,
+    _formula: formula
   })
 
-  return Object.freeze(that)
+  return that
+}
+
+const binaryFormulaTrait = {
+  ...formulaTrait,
+  operator () {
+    return this._operator
+  },
+  lFormula () {
+    return this._lFormula
+  },
+  rFormula () {
+    return this._rFormula
+  }
 }
 
 export function binaryFormula (operator, lFormula, rFormula) {
-  const that = Object.create(formulaTrait)
+  const that = Object.create(binaryFormulaTrait)
   Object.assign(that, {
-    operator,
-    lFormula,
-    rFormula
+    _operator: operator,
+    _lFormula: lFormula,
+    _rFormula: rFormula
   })
 
-  return Object.freeze(that)
+  return that
+}
+
+const quantifierFormulaTrait = {
+  quantifier () {
+    return this._quantifier
+  },
+  indVar () {
+    return this._indVar
+  },
+  formula () {
+    return this._formula
+  }
 }
 
 export function quantifiedFormula (quantifier, indVar, formula) {
-  const that = Object.create(formulaTrait)
+  const that = Object.create(quantifierFormulaTrait)
   Object.assign(that, {
-    quantifier,
-    indVar,
-    formula
+    _quantifier: quantifier,
+    _indVar: indVar,
+    _formula: formula
   })
 
-  return Object.freeze(that)
+  return that
 }
 
 export const UnaryOperator = {
@@ -91,24 +155,3 @@ export const Quantifier = {
   UNIVERSAL: 'UNIVERSAL',
   EXISTENTIAL: 'EXISTENTIAL'
 }
-
-// region Private
-const formulaTrait = {
-  /** Creates a conjunctive formula. */
-  and (formula) {
-    return binaryFormula(BinaryOperator.CONJUNCTION, this, formula)
-  },
-  /** Creates a disjunctive formula. */
-  or (formula) {
-    return binaryFormula(BinaryOperator.DISJUNCTION, this, formula)
-  },
-  /** Creates a conditional formula. */
-  then (formula) {
-    return binaryFormula(BinaryOperator.CONDITIONAL, this, formula)
-  },
-  /** Creates a biconditional formula. */
-  onlyThen (formula) {
-    return binaryFormula(BinaryOperator.BICONDITIONAL, this, formula)
-  }
-}
-// endregion

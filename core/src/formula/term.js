@@ -1,6 +1,12 @@
 import { variable } from './variable'
 
 const termTrait = {
+  termVar () {
+    return this._termVar
+  },
+  terms () {
+    return this._terms
+  },
   accept (visitor) {
     return visitor.visitTerm(this)
   }
@@ -20,8 +26,8 @@ export function term (termVar, ...terms) {
 
   const that = Object.create(termTrait)
   Object.assign(that, {
-    termVar: realTermVar,
-    terms: Object.freeze(realTerms)
+    _termVar: realTermVar,
+    _terms: realTerms
   })
 
   return that
