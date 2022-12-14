@@ -17,8 +17,8 @@ const binaryFormulaTrait = {
   get (...path) {
     if (path.length === 0) return this
     const [i, ...rest] = path
-    const formula = [this.lFormula(), this.rFormula()][i]
-    return formula.get(...rest)
+    const formulas = [this.lFormula(), this.rFormula()]
+    return formulas[i].get(...rest)
   }
 }
 

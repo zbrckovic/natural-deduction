@@ -32,9 +32,7 @@ export function createTerm (termVar, ...terms) {
   if (typeof termVar === 'string') {
     realTermVar = createVariable(termVar, terms.length)
   } else {
-    if (termVar.arity() !== realTerms.length) {
-      throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
-    }
+    assertArityMatches(termVar, realTerms)
     realTermVar = termVar
   }
 
@@ -45,4 +43,10 @@ export function createTerm (termVar, ...terms) {
   })
 
   return that
+}
+
+function assertArityMatches (termVar, terms) {
+  if (termVar.arity() !== terms.length) {
+    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+  }
 }

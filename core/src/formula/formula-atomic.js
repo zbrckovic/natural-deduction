@@ -33,9 +33,7 @@ export function createAtomicFormula (predVar, ...terms) {
   if (typeof predVar === 'string') {
     realPredVar = createVariable(predVar, terms.length)
   } else {
-    if (predVar.arity() !== realTerms.length) {
-      throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
-    }
+    assertArityMatches(predVar, realTerms)
     realPredVar = predVar
   }
 
@@ -46,4 +44,10 @@ export function createAtomicFormula (predVar, ...terms) {
   })
 
   return that
+}
+
+function assertArityMatches (predVar, terms) {
+  if (predVar.arity() !== terms.length) {
+    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+  }
 }
