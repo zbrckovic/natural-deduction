@@ -1,4 +1,5 @@
 import { createVariable } from './variable'
+import { createError, ErrorCode } from '../errors'
 
 const termTrait = {
   termVar () {
@@ -25,8 +26,17 @@ const termTrait = {
  * @param terms - A list where each item is either a term or an id of an individual variable.
  */
 export function createTerm (termVar, ...terms) {
-  const realTermVar = typeof termVar === 'string' ? createVariable(termVar, terms.length) : termVar
   const realTerms = terms.map(t => typeof t === 'string' ? createTerm(t) : t)
+
+  let realTermVar
+  if (typeof termVar === 'string') {
+    realTermVar = createVariable(termVar, terms.length)
+  } else {
+    if (termVar.arity() !== realTerms.length) {
+      throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+    }
+    realTermVar = termVar
+  }
 
   const that = Object.create(termTrait)
   Object.assign(that, {

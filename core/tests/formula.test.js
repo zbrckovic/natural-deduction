@@ -1,4 +1,6 @@
 import { createParser } from './parser'
+import { createAtomicFormula, createTerm, createVariable } from '../src/formula'
+import { ErrorCode, createErrorRegexForTest } from '../src/errors'
 
 describe('formula', () => {
   let parser
@@ -32,6 +34,22 @@ describe('formula', () => {
       const term = formula.get(1, 0)
       const expected = parser.parseTerm('y')
       expect(term).toDeepEqual(expected)
+    })
+  })
+
+  describe('createAtomicFormula', () => {
+    it('throws when predVar arity doesn\'t match the terms count', () => {
+      expect(() => {
+        createAtomicFormula(createVariable('F', 1), 'x', 'y')
+      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
+    })
+  })
+
+  describe('createTerm', () => {
+    it('throws when termVar arity doesn\'t match the terms count', () => {
+      expect(() => {
+        createTerm(createVariable('f', 1), 'x', 'y')
+      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
     })
   })
 })
