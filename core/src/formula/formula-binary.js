@@ -23,6 +23,16 @@ const binaryFormulaProto = {
     const [i, ...rest] = path
     const formulas = [this.lFormula(), this.rFormula()]
     return formulas[i].get(...rest)
+  },
+  /**
+   * Finds free individual variables and returns them as a map (variables by ids).
+   * @param boundVars - The map of bound variables used in recursive calls.
+   */
+  findFreeIndVars (boundVars = {}) {
+    return {
+      ...this.lFormula().findFreeIndVars(boundVars),
+      ...this.rFormula().findFreeIndVars(boundVars)
+    }
   }
 }
 

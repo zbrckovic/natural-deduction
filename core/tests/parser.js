@@ -4,6 +4,10 @@ import { AstVisitor } from '../src/parser/ast-visitor'
 class Parser {
   visitor = new AstVisitor()
 
+  getVariable (id) {
+    return this.visitor.getVariable(id)
+  }
+
   parseRootFormula (formulaTxt) {
     const antlr4Parser = createAntlr4Parser(formulaTxt)
     const ast = antlr4Parser.rootFormula()

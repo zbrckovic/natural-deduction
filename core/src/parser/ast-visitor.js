@@ -16,6 +16,10 @@ import { VariableTracker } from './variable-tracker'
 export class AstVisitor extends NaturalDeductionVisitor {
   variableTracker = new VariableTracker()
 
+  getVariable (id) {
+    return this.variableTracker.get(id)
+  }
+
   // region Formula
   visitRootFormula (ctx) {
     if (ctx.compRootFormula() !== null) {

@@ -23,6 +23,16 @@ const atomicFormulaProto = {
     const [i, ...rest] = path
     const term = this.terms()[i]
     return term.get(...rest)
+  },
+  /**
+   * Finds free individual variables and returns them as a map (variables by ids).
+   * @param boundVars - The map of bound variables used in recursive calls.
+   */
+  findFreeIndVars (boundVars = {}) {
+    return this.terms().reduce(
+      (acc, term) => ({ ...acc, ...term.findFreeIndVars(boundVars) }),
+      {}
+    )
   }
 }
 

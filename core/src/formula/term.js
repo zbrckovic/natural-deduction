@@ -8,6 +8,9 @@ const termProto = {
   terms () {
     return this._terms
   },
+  isIndVar () {
+    return this.termVar().arity() === 0
+  },
   accept (visitor) {
     return visitor.visitTerm(this)
   },
@@ -20,6 +23,22 @@ const termProto = {
     const [i, ...rest] = path
     const term = this.terms()[i]
     return term.get(...rest)
+  },
+  /**
+   * Finds free individual variables and returns them as a map (variables by ids).
+   * @param boundVars - The map of bound variables used in recursive calls.
+   */
+  findFreeIndVars (boundVars = {}) {
+    if (this.isIndVar()) {
+      const indVar = this.termVar()
+      const isFree = boundVars[indVar.id()] === undefined
+      return isFree ? { [indVar.id()]: indVar } : {}
+    }
+
+    return this.terms().reduce(
+      (acc, term) => ({ ...acc, ...term.findFreeIndVars(boundVars) }),
+      {}
+    )
   }
 }
 

@@ -6,13 +6,17 @@ import { createError, ErrorCode } from '../errors'
  * variables with the same id.
  */
 export class VariableTracker {
-  idToVar = {}
+  _idToVar = {}
+
+  get (id) {
+    return this._idToVar[id]
+  }
 
   register (variable) {
-    const existingVariable = this.idToVar[variable.id()]
+    const existingVariable = this._idToVar[variable.id()]
 
     if (existingVariable === undefined) {
-      this.idToVar[variable.id()] = variable
+      this._idToVar[variable.id()] = variable
     } else {
       if (!equals(existingVariable, variable)) {
         throw createError(

@@ -52,4 +52,28 @@ describe('formula', () => {
       }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
     })
   })
+
+  describe('findFreeIndVars', function () {
+    test.each([
+      ['~A -> B', []],
+      ['F2xy', ['x', 'y']],
+      ['F2xx', ['x']],
+      ['(x) Fx', []],
+      ['[x] Fx', []],
+      ['(x) F2xy', ['y']],
+      ['(x) (x) Fx', []],
+      ['Fx -> Gy', ['x', 'y']]
+    ])('for %p returns variables %p', (formulaTxt, expectedIndVarsRaw) => {
+      const formula = parser.parseRootFormula(formulaTxt)
+
+      const expectedIndVars = {}
+      expectedIndVarsRaw.forEach(id => {
+        expectedIndVars[id] = parser.getVariable(id)
+      })
+
+      const freeIndVars = formula.findFreeIndVars()
+
+      expect(freeIndVars).toDeepEqual(expectedIndVars)
+    })
+  })
 })

@@ -20,6 +20,13 @@ const unaryFormulaProto = {
     const [i, ...rest] = path
     if (i !== 0) throw new Error(`Invalid index ${i}`)
     return this.formula().get(...rest)
+  },
+  /**
+   * Finds free individual variables and returns them as a map (variables by ids).
+   * @param boundVars - The map of bound variables used in recursive calls.
+   */
+  findFreeIndVars (boundVars = {}) {
+    return this.formula().findFreeIndVars(boundVars)
   }
 }
 
