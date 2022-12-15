@@ -1,7 +1,7 @@
-import { formulaTrait } from './formula-common'
+import { formulaProto } from './formula-common'
 
-const binaryFormulaTrait = {
-  ...formulaTrait,
+const binaryFormulaProto = {
+  ...formulaProto,
   operator () {
     return this._operator
   },
@@ -23,7 +23,7 @@ const binaryFormulaTrait = {
 }
 
 export function createBinaryFormula (operator, lFormula, rFormula) {
-  const that = Object.create(binaryFormulaTrait)
+  const that = Object.create(binaryFormulaProto)
   Object.assign(that, {
     _operator: operator,
     _lFormula: lFormula,

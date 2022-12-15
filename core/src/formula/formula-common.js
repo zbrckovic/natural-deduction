@@ -1,6 +1,6 @@
 import { BinaryOperator, createBinaryFormula } from './formula-binary'
 
-export const formulaTrait = {
+export const formulaProto = {
   /** Creates a conjunctive formula. */
   and (formula) {
     return createBinaryFormula(BinaryOperator.CONJUNCTION, this, formula)

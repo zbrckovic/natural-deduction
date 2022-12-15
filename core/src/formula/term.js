@@ -1,7 +1,7 @@
 import { createVariable } from './variable'
 import { createError, ErrorCode } from '../errors'
 
-const termTrait = {
+const termProto = {
   termVar () {
     return this._termVar
   },
@@ -36,7 +36,7 @@ export function createTerm (termVar, ...terms) {
     realTermVar = termVar
   }
 
-  const that = Object.create(termTrait)
+  const that = Object.create(termProto)
   Object.assign(that, {
     _termVar: realTermVar,
     _terms: realTerms

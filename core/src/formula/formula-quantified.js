@@ -1,4 +1,4 @@
-const quantifiedFormulaTrait = {
+const quantifiedFormulaProto = {
   quantifier () {
     return this._quantifier
   },
@@ -20,7 +20,7 @@ const quantifiedFormulaTrait = {
 }
 
 export function createQuantifiedFormula (quantifier, indVar, formula) {
-  const that = Object.create(quantifiedFormulaTrait)
+  const that = Object.create(quantifiedFormulaProto)
   Object.assign(that, {
     _quantifier: quantifier,
     _indVar: indVar,

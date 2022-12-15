@@ -1,10 +1,10 @@
 import { createVariable } from './variable'
 import { createTerm } from './term'
-import { formulaTrait } from './formula-common'
+import { formulaProto } from './formula-common'
 import { createError, ErrorCode } from '../errors'
 
-const atomicFormulaTrait = {
-  ...formulaTrait,
+const atomicFormulaProto = {
+  ...formulaProto,
   predVar () {
     return this._predVar
   },
@@ -37,7 +37,7 @@ export function createAtomicFormula (predVar, ...terms) {
     realPredVar = predVar
   }
 
-  const that = Object.create(atomicFormulaTrait)
+  const that = Object.create(atomicFormulaProto)
   Object.assign(that, {
     _predVar: realPredVar,
     _terms: realTerms

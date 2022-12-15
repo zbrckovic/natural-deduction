@@ -1,7 +1,7 @@
-import { formulaTrait } from './formula-common'
+import { formulaProto } from './formula-common'
 
-const unaryFormulaTrait = {
-  ...formulaTrait,
+const unaryFormulaProto = {
+  ...formulaProto,
   operator () {
     return this._operator
   },
@@ -20,7 +20,7 @@ const unaryFormulaTrait = {
 }
 
 export function createUnaryFormula (operator, formula) {
-  const that = Object.create(unaryFormulaTrait)
+  const that = Object.create(unaryFormulaProto)
   Object.assign(that, {
     _operator: operator,
     _formula: formula

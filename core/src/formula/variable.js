@@ -1,4 +1,4 @@
-const variableTrait = {
+const variableProto = {
   id () {
     return this._id
   },
@@ -16,7 +16,7 @@ const variableTrait = {
  * @param arity - The number of terms required to form an expression (term).
  */
 export function createVariable (id, arity = 0) {
-  const that = Object.create(variableTrait)
+  const that = Object.create(variableProto)
   Object.assign(that, {
     _id: id,
     _arity: arity
