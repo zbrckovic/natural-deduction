@@ -56,6 +56,8 @@ describe('formula', () => {
   describe('findFreeIndVars', function () {
     test.each([
       ['~A -> B', []],
+      ['F(f(x))', ['x']],
+      ['(x) F(f(x))', []],
       ['F2xy', ['x', 'y']],
       ['F2xx', ['x']],
       ['(x) Fx', []],
