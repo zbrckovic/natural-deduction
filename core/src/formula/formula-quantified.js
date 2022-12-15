@@ -11,6 +11,7 @@ const quantifiedFormulaProto = {
   accept (visitor) {
     return visitor.visitQuantifiedFormula(this)
   },
+
   get (...path) {
     if (path.length === 0) return this
     const [i, ...rest] = path

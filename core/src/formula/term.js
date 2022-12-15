@@ -11,6 +11,10 @@ const termProto = {
   accept (visitor) {
     return visitor.visitTerm(this)
   },
+  /**
+   * Finds a subterm by following the path.
+   * @param path - The list of indices where each index represents the point of branching.
+   */
   get (...path) {
     if (path.length === 0) return this
     const [i, ...rest] = path
