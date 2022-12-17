@@ -1,4 +1,4 @@
-import { formulaProto } from './common'
+import { formulaProto } from './formula-proto'
 
 const binaryFormulaProto = {
   ...formulaProto,
@@ -14,16 +14,6 @@ const binaryFormulaProto = {
   },
   accept (visitor) {
     return visitor.visitBinaryFormula(this)
-  },
-  /**
-   * Finds free individual variables and returns them as a map (variables by ids).
-   * @param boundVars - The map of bound variables used in recursive calls.
-   */
-  findFreeIndVars (boundVars = {}) {
-    return {
-      ...this.lFormula().findFreeIndVars(boundVars),
-      ...this.rFormula().findFreeIndVars(boundVars)
-    }
   }
 }
 

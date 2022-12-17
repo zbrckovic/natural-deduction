@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "testClearCache": "jest --clearCache"
   },
   "engines": {
     "node": ">=18.12.0",

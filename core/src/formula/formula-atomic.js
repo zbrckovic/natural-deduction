@@ -1,7 +1,7 @@
 import { createVariable } from './variable'
 import { createTerm } from './term'
-import { formulaProto } from './common'
 import { createError, ErrorCode } from '../errors'
+import { formulaProto } from './formula-proto'
 
 const atomicFormulaProto = {
   ...formulaProto,
@@ -14,16 +14,6 @@ const atomicFormulaProto = {
   },
   accept (visitor) {
     return visitor.visitAtomicFormula(this)
-  },
-  /**
-   * Finds free individual variables and returns them as a map (variables by ids).
-   * @param boundVars - The map of bound variables used in recursive calls.
-   */
-  findFreeIndVars (boundVars = {}) {
-    return this.terms().reduce(
-      (acc, term) => ({ ...acc, ...term.findFreeIndVars(boundVars) }),
-      {}
-    )
   }
 }
 

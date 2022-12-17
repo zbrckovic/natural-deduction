@@ -1,4 +1,14 @@
-import { all, createAtomicFormula, not, some, createTerm } from '../src/formula'
+import {
+  all,
+  createAtomicFormula,
+  not,
+  some,
+  createTerm,
+  and,
+  or,
+  then,
+  onlyThen
+} from '../src/formula'
 import { createParser } from './parser'
 import { ErrorCode, createErrorRegexForTest } from '../src/errors'
 
@@ -34,27 +44,27 @@ describe('ast processor', () => {
     ],
     [
       'A & B',
-      createAtomicFormula('A').and(createAtomicFormula('B'))
+      and('A', 'B')
     ],
     [
       'A | B',
-      createAtomicFormula('A').or(createAtomicFormula('B'))
+      or('A', 'B')
     ],
     [
       'A -> B',
-      createAtomicFormula('A').then(createAtomicFormula('B'))
+      then('A', 'B')
     ],
     [
       'A <-> B',
-      createAtomicFormula('A').onlyThen(createAtomicFormula('B'))
+      onlyThen('A', 'B')
     ],
     [
       '(x) A',
-      all('x', createAtomicFormula('A'))
+      all('x', 'A')
     ],
     [
       '[x] A',
-      some('x', createAtomicFormula('A'))
+      some('x', 'A')
     ]
   ])('produces expected formula for "%s"', (formulaTxt, expectedFormula) => {
     const formula = parser.parseRootFormula(formulaTxt)

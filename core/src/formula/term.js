@@ -1,6 +1,6 @@
 import { createVariable } from './variable'
 import { createError, ErrorCode } from '../errors'
-import { expressionProto } from './common'
+import { expressionProto } from './expression-proto'
 
 const termProto = {
   ...expressionProto,
@@ -15,32 +15,6 @@ const termProto = {
   },
   accept (visitor) {
     return visitor.visitTerm(this)
-  },
-  /**
-   * Finds a subterm by following the path.
-   * @param path - The list of indices where each index represents the point of branching.
-   */
-  get (...path) {
-    if (path.length === 0) return this
-    const [i, ...rest] = path
-    const term = this.terms()[i]
-    return term.get(...rest)
-  },
-  /**
-   * Finds free individual variables and returns them as a map (variables by ids).
-   * @param boundVars - The map of bound variables used in recursive calls.
-   */
-  findFreeIndVars (boundVars = {}) {
-    if (this.isIndVar()) {
-      const indVar = this.termVar()
-      const isFree = boundVars[indVar.id()] === undefined
-      return isFree ? { [indVar.id()]: indVar } : {}
-    }
-
-    return this.terms().reduce(
-      (acc, term) => ({ ...acc, ...term.findFreeIndVars(boundVars) }),
-      {}
-    )
   }
 }
 
