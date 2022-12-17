@@ -1,7 +1,8 @@
-import { formulaProto } from './formula-common'
+import { formulaProto } from './common'
 
 const unaryFormulaProto = {
   ...formulaProto,
+
   operator () {
     return this._operator
   },
@@ -10,16 +11,6 @@ const unaryFormulaProto = {
   },
   accept (visitor) {
     return visitor.visitUnaryFormula(this)
-  },
-  /**
-   * Finds a subexpression by following the path.
-   * @param path - The list of indices where each index represents the point of branching.
-   */
-  get (...path) {
-    if (path.length === 0) return this
-    const [i, ...rest] = path
-    if (i !== 0) throw new Error(`Invalid index ${i}`)
-    return this.formula().get(...rest)
   },
   /**
    * Finds free individual variables and returns them as a map (variables by ids).

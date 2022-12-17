@@ -1,10 +1,11 @@
 import { createVariable } from './variable'
 import { createTerm } from './term'
-import { formulaProto } from './formula-common'
+import { formulaProto } from './common'
 import { createError, ErrorCode } from '../errors'
 
 const atomicFormulaProto = {
   ...formulaProto,
+
   predVar () {
     return this._predVar
   },
@@ -13,16 +14,6 @@ const atomicFormulaProto = {
   },
   accept (visitor) {
     return visitor.visitAtomicFormula(this)
-  },
-  /**
-   * Finds a subexpression by following the path.
-   * @param path - The list of indices where each index represents the point of branching.
-   */
-  get (...path) {
-    if (path.length === 0) return this
-    const [i, ...rest] = path
-    const term = this.terms()[i]
-    return term.get(...rest)
   },
   /**
    * Finds free individual variables and returns them as a map (variables by ids).
