@@ -1,7 +1,7 @@
-import { createUnaryFormula } from './formula-unary'
-import { createQuantifiedFormula } from './formula-quantified'
-import { createVariable } from './variable'
-import { Quantifier, UnaryOperator } from './symbols'
+import { createUnaryFormula } from './structures/formula-unary'
+import { createQuantifiedFormula } from './structures/formula-quantified'
+import { createVariable } from './structures/variable'
+import { Quantifier, UnaryOperator } from './structures/symbols'
 
 /**
  * Creates a negative formula.

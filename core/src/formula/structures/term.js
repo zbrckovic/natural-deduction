@@ -1,9 +1,16 @@
 import { createVariable } from './variable'
-import { createError, ErrorCode } from '../errors'
-import { expressionProto } from './expression'
+import { createError, ErrorCode } from '../../errors'
+import { expressionTrait } from '../traits'
+import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
 
-const termProto = {
-  ...expressionProto,
+function assertArityMatches (termVar, terms) {
+  if (termVar.arity() !== terms.length) {
+    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+  }
+}
+
+const termTrait = {
+  ...expressionTrait,
 
   termVar () {
     return this._termVar
@@ -36,7 +43,7 @@ export function createTerm (termVar, ...terms) {
     realTermVar = termVar
   }
 
-  const that = Object.create(termProto)
+  const that = Object.create(termTrait)
   Object.assign(that, {
     _termVar: realTermVar,
     _terms: realTerms
@@ -45,8 +52,4 @@ export function createTerm (termVar, ...terms) {
   return that
 }
 
-function assertArityMatches (termVar, terms) {
-  if (termVar.arity() !== terms.length) {
-    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
-  }
-}
+forwardRef.createTerm = createTerm

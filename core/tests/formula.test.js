@@ -1,6 +1,6 @@
 import { createParser } from './parser'
 import { createAtomicFormula, createTerm, createVariable } from '../src/formula'
-import { ErrorCode, createErrorRegexForTest } from '../src/errors'
+import { createErrorRegexForTest, ErrorCode } from '../src/errors'
 
 describe('formula', () => {
   let parser
@@ -76,6 +76,63 @@ describe('formula', () => {
       const freeIndVars = formula.findFreeIndVars()
 
       expect(freeIndVars).toDeepEqual(expectedIndVars)
+    })
+  })
+
+  describe('substituteFreeIndVars', function () {
+    test.each([
+      [
+        'A',
+        {},
+        'A'
+      ],
+      [
+        'Fx',
+        {},
+        'Fx'
+      ],
+      [
+        'Fx',
+        { x: 'x' },
+        'Fx'
+      ],
+      [
+        'Fx',
+        { x: 'y' },
+        'Fy'
+      ],
+      [
+        '(x) Fx',
+        { x: 'y' },
+        '(x) Fx'
+      ],
+      [
+        'F2xx',
+        { x: 'y' },
+        'F2yy'
+      ],
+      [
+        'F2xy',
+        { x: 'y', y: 'x' },
+        'F2yx'
+      ],
+      [
+        '(F2xy -> ~G2yx) & [x] F2yx',
+        { x: 'y', y: 'z' },
+        '(F2yz -> ~G2zy) & [x] F2zx'
+      ]
+    ])('for %p and %p returns %p', (formulaTxt, substitutionsRaw, expectedFormulaTxt) => {
+      const formula = parser.parseRootFormula(formulaTxt)
+      const expectedFormula = parser.parseRootFormula(expectedFormulaTxt)
+
+      const substitutions = {}
+      Object.entries(substitutionsRaw).forEach(([id, substituteId]) => {
+        substitutions[id] = createVariable(substituteId)
+      })
+
+      const actualFormula = formula.substituteFreeIndVars(substitutions)
+
+      expect(actualFormula).toDeepEqual(expectedFormula)
     })
   })
 })

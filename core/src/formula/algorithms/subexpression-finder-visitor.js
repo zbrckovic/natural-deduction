@@ -1,4 +1,4 @@
-const subformulaFinderProto = {
+const subformulaFinderTrait = {
   visitBinaryFormula (formula) {
     if (this._isRoot()) return formula
     const i = this._path.shift()
@@ -38,8 +38,8 @@ const subformulaFinderProto = {
   }
 }
 
-export function createSubformulaFinder (path) {
-  const that = Object.create(subformulaFinderProto)
+export function createSubformulaFinderVisitor (path) {
+  const that = Object.create(subformulaFinderTrait)
   that._path = path
   return that
 }

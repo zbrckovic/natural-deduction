@@ -1,21 +1,8 @@
 import { createVariable } from './variable'
 import { createTerm } from './term'
-import { createError, ErrorCode } from '../errors'
-import { formulaProto } from './formula'
-
-const atomicFormulaProto = {
-  ...formulaProto,
-
-  predVar () {
-    return this._predVar
-  },
-  terms () {
-    return this._terms
-  },
-  accept (visitor) {
-    return visitor.visitAtomicFormula(this)
-  }
-}
+import { createError, ErrorCode } from '../../errors'
+import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
+import { formulaTrait } from '../traits'
 
 /**
  * @param predVar - A predicate variable or an id of one.
@@ -32,7 +19,7 @@ export function createAtomicFormula (predVar, ...terms) {
     realPredVar = predVar
   }
 
-  const that = Object.create(atomicFormulaProto)
+  const that = Object.create(atomicFormulaTrait)
   Object.assign(that, {
     _predVar: realPredVar,
     _terms: realTerms
@@ -41,8 +28,25 @@ export function createAtomicFormula (predVar, ...terms) {
   return that
 }
 
+const atomicFormulaTrait = {
+  ...formulaTrait,
+
+  predVar () {
+    return this._predVar
+  },
+  terms () {
+    return this._terms
+  },
+  accept (visitor) {
+    return visitor.visitAtomicFormula(this)
+  }
+}
+
 function assertArityMatches (predVar, terms) {
   if (predVar.arity() !== terms.length) {
     throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
   }
 }
+
+// Avoiding circular imports
+forwardRef.createAtomicFormula = createAtomicFormula
