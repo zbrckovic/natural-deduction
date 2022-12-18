@@ -1,7 +1,7 @@
 import { createVariable } from './variable'
 import { createTerm } from './term'
 import { createError, ErrorCode } from '../errors'
-import { formulaProto } from './formula-proto'
+import { formulaProto } from './formula'
 
 const atomicFormulaProto = {
   ...formulaProto,

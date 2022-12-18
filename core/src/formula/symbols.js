@@ -1,0 +1,15 @@
+export const BinaryOperator = {
+  CONJUNCTION: 'CONJUNCTION',
+  DISJUNCTION: 'DISJUNCTION',
+  CONDITIONAL: 'CONDITIONAL',
+  BICONDITIONAL: 'BICONDITIONAL'
+}
+
+export const UnaryOperator = {
+  NEGATION: 'NEGATION'
+}
+
+export const Quantifier = {
+  UNIVERSAL: 'UNIVERSAL',
+  EXISTENTIAL: 'EXISTENTIAL'
+}

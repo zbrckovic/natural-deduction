@@ -1,4 +1,4 @@
-import { formulaProto } from './formula-proto'
+import { formulaProto } from './formula'
 
 const unaryFormulaProto = {
   ...formulaProto,
@@ -22,8 +22,4 @@ export function createUnaryFormula (operator, formula) {
   })
 
   return that
-}
-
-export const UnaryOperator = {
-  NEGATION: 'NEGATION'
 }

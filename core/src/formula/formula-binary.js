@@ -1,4 +1,4 @@
-import { formulaProto } from './formula-proto'
+import { formulaProto, forwardRef } from './formula'
 
 const binaryFormulaProto = {
   ...formulaProto,
@@ -28,9 +28,4 @@ export function createBinaryFormula (operator, lFormula, rFormula) {
   return that
 }
 
-export const BinaryOperator = {
-  CONJUNCTION: 'CONJUNCTION',
-  DISJUNCTION: 'DISJUNCTION',
-  CONDITIONAL: 'CONDITIONAL',
-  BICONDITIONAL: 'BICONDITIONAL'
-}
+forwardRef.createBinaryFormula = createBinaryFormula

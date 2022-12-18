@@ -1,4 +1,4 @@
-import { formulaProto } from './formula-proto'
+import { formulaProto } from './formula'
 
 const quantifiedFormulaProto = {
   ...formulaProto,
@@ -26,9 +26,4 @@ export function createQuantifiedFormula (quantifier, indVar, formula) {
   })
 
   return that
-}
-
-export const Quantifier = {
-  UNIVERSAL: 'UNIVERSAL',
-  EXISTENTIAL: 'EXISTENTIAL'
 }

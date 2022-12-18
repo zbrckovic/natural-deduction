@@ -4,10 +4,10 @@ import {
   BinaryOperator,
   createAtomicFormula,
   createBinaryFormula,
-  not,
-  some,
   createTerm,
-  createVariable
+  createVariable,
+  not,
+  some
 } from '../formula'
 import NaturalDeductionLexer from './antlr4-generated/NaturalDeductionLexer'
 import { VariableTracker } from './variable-tracker'

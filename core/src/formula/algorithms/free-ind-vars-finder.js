@@ -1,4 +1,11 @@
+
 const freeIndVarsFinderProto = {
+  /**
+   * Keeps track of how many times has each individual variable been bound by some ancestor's
+   * quantifier.
+   */
+  _boundVars: undefined,
+
   visitBinaryFormula (formula) {
     return {
       ...formula.lFormula().accept(this),

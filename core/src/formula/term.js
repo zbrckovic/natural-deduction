@@ -1,9 +1,10 @@
 import { createVariable } from './variable'
 import { createError, ErrorCode } from '../errors'
-import { expressionProto } from './expression-proto'
+import { expressionProto } from './expression'
 
 const termProto = {
   ...expressionProto,
+
   termVar () {
     return this._termVar
   },
