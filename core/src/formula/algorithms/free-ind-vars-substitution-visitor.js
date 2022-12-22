@@ -1,4 +1,5 @@
 import { bindTrackingTrait } from './bind-tracking-trait'
+import { createError, ErrorCode } from '../../errors'
 
 export const freeIndVarsSubstitutionVisitorTrait = {
   ...bindTrackingTrait,
@@ -40,7 +41,12 @@ export const freeIndVarsSubstitutionVisitorTrait = {
   },
   _resolveSubstitute (indVar) {
     if (this._isBound(indVar)) return indVar
-    return this._substitutions[indVar.id()] ?? indVar
+    const substitute = this._substitutions[indVar.id()]
+    if (substitute === undefined) return indVar
+    if (this._isBound(substitute)) {
+      throw createError(ErrorCode.VARIABLE_BECOMES_BOUND, 'substitute becomes bound')
+    }
+    return substitute
   }
 }
 

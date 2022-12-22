@@ -1,6 +1,7 @@
 export const ErrorCode = {
   VARIABLE_COLLISION: 0,
-  INVALID_ARITY: 1
+  INVALID_ARITY: 1,
+  VARIABLE_BECOMES_BOUND: 2
 }
 
 /**

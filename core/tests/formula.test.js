@@ -134,5 +134,20 @@ describe('formula', () => {
 
       expect(actualFormula).toDeepEqual(expectedFormula)
     })
+
+    test.each([
+      ['[x] F2xy', { y: 'x' }],
+      ['(x) [y] (F2xy -> ~Gz)', { z: 'x' }]
+    ])('for %p and %p throws', function (formulaTxt, substitutionsRaw) {
+      const formula = parser.parseRootFormula(formulaTxt)
+
+      const substitutions = {}
+      Object.entries(substitutionsRaw).forEach(([id, substituteId]) => {
+        substitutions[id] = createVariable(substituteId)
+      })
+
+      expect(() => { formula.substituteFreeIndVars(substitutions) })
+        .toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_BECOMES_BOUND))
+    })
   })
 })
