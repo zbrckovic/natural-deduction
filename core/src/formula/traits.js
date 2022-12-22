@@ -25,6 +25,9 @@ export const expressionTrait = {
   substituteFreeIndVars (substitutions) {
     const visitor = createFreeIndVarsSubstitutionVisitor(substitutions)
     return this.accept(visitor)
+  },
+  isIsomorphicTo (other) {
+    return false
   }
 }
 
