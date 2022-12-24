@@ -8,35 +8,19 @@ describe('formula', () => {
     parser = createParser()
   })
 
-  describe('equality', () => {
-    test.each([
-      ['A', 'A'],
-      ['~A', '~A'],
-      ['A -> B', 'A -> B'],
-      ['Fxy', 'Fxy'],
-      ['F(x, y)', 'Fxy'],
-      ['(x) F(x, y)', '(x) Fxy'],
-      ['F(x, f(y))', 'F(x, f(y))']
-    ])('%p and %p are equal', (formula1Text, formula2Text) => {
-      const formula1 = parser.parseRootFormula(formula1Text)
-      const formula2 = parser.parseRootFormula(formula2Text)
-      expect(formula1).toDeepEqual(formula2)
+  describe('createAtomicFormula', () => {
+    it('throws when predVar arity doesn\'t match the terms count', () => {
+      expect(() => {
+        createAtomicFormula(createVariable('F', 1), 'x', 'y')
+      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
     })
+  })
 
-    test.each([
-      ['A', 'B'],
-      ['Fx', 'Fy'],
-      ['Fx', 'Gx'],
-      ['Fxy', 'Fyx'],
-      ['~A', '~B'],
-      ['(x) A', '(y) A'],
-      ['F(x, f(y))', 'F(x, g(y))'],
-      ['F(x, f(x))', 'F(x, f(y))'],
-      ['(x) Fx', 'Fx']
-    ])('%p and %p are not equal', (formula1Text, formula2Text) => {
-      const formula1 = parser.parseRootFormula(formula1Text)
-      const formula2 = parser.parseRootFormula(formula2Text)
-      expect(formula1).not.toDeepEqual(formula2)
+  describe('createTerm', () => {
+    it('throws when termVar arity doesn\'t match the terms count', () => {
+      expect(() => {
+        createTerm(createVariable('f', 1), 'x', 'y')
+      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
     })
   })
 
@@ -66,22 +50,6 @@ describe('formula', () => {
       const term = formula.get(1, 0)
       const expected = parser.parseTerm('y')
       expect(term).toDeepEqual(expected)
-    })
-  })
-
-  describe('createAtomicFormula', () => {
-    it('throws when predVar arity doesn\'t match the terms count', () => {
-      expect(() => {
-        createAtomicFormula(createVariable('F', 1), 'x', 'y')
-      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
-    })
-  })
-
-  describe('createTerm', () => {
-    it('throws when termVar arity doesn\'t match the terms count', () => {
-      expect(() => {
-        createTerm(createVariable('f', 1), 'x', 'y')
-      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
     })
   })
 
@@ -183,7 +151,7 @@ describe('formula', () => {
     })
   })
 
-  describe('isomorphism', () => {
+  describe('isIsomorphicTo', () => {
     test.each([
       ['A', 'A'],
       ['A', 'B'],
@@ -193,7 +161,7 @@ describe('formula', () => {
       ['(x) [y] F2xy', '(y) [x] G2yx'],
       ['(x) [y] F2xy', '(y) [x] G2yx'],
       ['(x) (F2xy & [x] Gx)', '(y) (F2yz & [z] Gz)']
-    ])('%p and %p are isomorphic', (formula1Txt, formula2Txt) => {
+    ])('returns true for %p and %p', (formula1Txt, formula2Txt) => {
       const formula1 = parser.parseRootFormula(formula1Txt)
       const formula2 = parser.parseRootFormula(formula2Txt)
       const result = formula1.isIsomorphicTo(formula2)
@@ -207,7 +175,7 @@ describe('formula', () => {
       ['F2xy', 'F2xx'],
       ['(x) Fx', '[x] Fx'],
       ['(x) [y] F2xy', '(y) [x] F2xy']
-    ])('%p and %p are not isomorphic', (formula1Txt, formula2Txt) => {
+    ])('returns false for %p and %p', (formula1Txt, formula2Txt) => {
       const formula1 = parser.parseRootFormula(formula1Txt)
       const formula2 = parser.parseRootFormula(formula2Txt)
       const result = formula1.isIsomorphicTo(formula2)
