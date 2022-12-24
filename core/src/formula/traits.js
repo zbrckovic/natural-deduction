@@ -22,6 +22,7 @@ export const expressionTrait = {
     const visitor = createFreeIndVarsFinderVisitor()
     return this.accept(visitor)
   },
+  /** Substitutes individual variables with individual variables. */
   substituteFreeIndVars (substitutions) {
     const visitor = createFreeIndVarsSubstitutionVisitor(substitutions)
     return this.accept(visitor)

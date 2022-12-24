@@ -8,7 +8,6 @@ export function createQuantifiedFormula (quantifier, indVar, formula) {
     _indVar: indVar,
     _formula: formula
   })
-
   return that
 }
 

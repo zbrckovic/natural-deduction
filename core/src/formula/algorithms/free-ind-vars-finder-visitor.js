@@ -1,5 +1,16 @@
 import { bindTrackingTrait } from './bind-tracking-trait'
 
+/** Creates an expression visitor which finds free individual variables. */
+export function createFreeIndVarsFinderVisitor () {
+  const that = Object.create(freeIndVarsFinderTrait)
+  /**
+   * Keeps track of how many times has each individual variable been specified as some ancestor's
+   * bound variable.
+   */
+  that._boundVars = {}
+  return that
+}
+
 const freeIndVarsFinderTrait = {
   ...bindTrackingTrait,
 
@@ -21,17 +32,9 @@ const freeIndVarsFinderTrait = {
   visitTerm (term) {
     if (term.isIndVar()) {
       const indVar = term.termVar()
-      const isFree = !this._isBound(indVar)
+      const isFree = !this.isBound(indVar)
       return isFree ? { [indVar.id()]: indVar } : {}
     }
     return term.terms().reduce((acc, term) => ({ ...acc, ...term.accept(this) }), {})
   }
-}
-
-export function createFreeIndVarsFinderVisitor () {
-  const that = Object.create(freeIndVarsFinderTrait)
-  // Keeps track of how many times has each individual variable been bound by some ancestor's
-  // quantifier.
-  that._boundVars = {}
-  return that
 }

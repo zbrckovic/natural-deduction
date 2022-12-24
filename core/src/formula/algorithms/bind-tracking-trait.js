@@ -1,25 +1,36 @@
+/**
+ * Provides an expression visitor the ability to track which variables are bound.
+ */
 export const bindTrackingTrait = {
   /**
    * Executes the action in the context where the provided individual variable is bound.
-   * @param indVar - The individual variable to bind.
+   * @param indVar - The individual variable to mark as bound.
    * @param action - The action to execute.
    */
   doWithBoundIndVar (indVar, action) {
-    this._registerBinding(indVar)
+    this.registerBinding(indVar)
     const result = action(indVar)
-    this._unregisterBinding(indVar)
+    this.unregisterBinding(indVar)
     return result
   },
-  _registerBinding (indVar) {
-    this._boundVars[indVar.id()] = this._numberOfBinds(indVar) + 1
+  /** @private */
+  registerBinding (indVar) {
+    this._boundVars[indVar.id()] = this.numberOfBindingQuantifiers(indVar) + 1
   },
-  _unregisterBinding (indVar) {
-    this._boundVars[indVar.id()] = this._numberOfBinds(indVar) - 1
+  /** @private */
+  unregisterBinding (indVar) {
+    this._boundVars[indVar.id()] = this.numberOfBindingQuantifiers(indVar) - 1
   },
-  _isBound (indVar) {
-    return this._numberOfBinds(indVar) > 0
+  /** @private */
+  isBound (indVar) {
+    return this.numberOfBindingQuantifiers(indVar) > 0
   },
-  _numberOfBinds (indVar) {
+  /**
+   * Returns the number of ancestors whose quantifiers have this variable as the bound variable
+   * (In case there are more than 1, all except the closest ancestor are binding vacuously).
+   * @private
+   */
+  numberOfBindingQuantifiers (indVar) {
     return this._boundVars[indVar.id()] ?? 0
   }
 }

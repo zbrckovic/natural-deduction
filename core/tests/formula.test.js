@@ -149,37 +149,37 @@ describe('formula', () => {
       expect(() => { formula.substituteFreeIndVars(substitutions) })
         .toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_BECOMES_BOUND))
     })
+  })
 
-    describe('isomorphism', () => {
-      test.each([
-        ['A', 'A'],
-        ['A', 'B'],
-        ['A -> ~B', 'B -> ~A'],
-        ['Fx', 'Gy'],
-        ['F2xy', 'G2yx'],
-        ['(x) [y] F2xy', '(y) [x] G2yx'],
-        ['(x) [y] F2xy', '(y) [x] G2yx'],
-        ['(x) (F2xy & [x] Gx)', '(y) (F2yz & [z] Gz)']
-      ])('%p and %p are isomorphic', (formula1Txt, formula2Txt) => {
-        const formula1 = parser.parseRootFormula(formula1Txt)
-        const formula2 = parser.parseRootFormula(formula2Txt)
-        const result = formula1.isIsomorphicTo(formula2)
-        expect(result).toBe(true)
-      })
+  describe('isomorphism', () => {
+    test.each([
+      ['A', 'A'],
+      ['A', 'B'],
+      ['A -> ~B', 'B -> ~A'],
+      ['Fx', 'Gy'],
+      ['F2xy', 'G2yx'],
+      ['(x) [y] F2xy', '(y) [x] G2yx'],
+      ['(x) [y] F2xy', '(y) [x] G2yx'],
+      ['(x) (F2xy & [x] Gx)', '(y) (F2yz & [z] Gz)']
+    ])('%p and %p are isomorphic', (formula1Txt, formula2Txt) => {
+      const formula1 = parser.parseRootFormula(formula1Txt)
+      const formula2 = parser.parseRootFormula(formula2Txt)
+      const result = formula1.isIsomorphicTo(formula2)
+      expect(result).toBe(true)
+    })
 
-      test.each([
-        ['A', '~A'],
-        ['A', '~B'],
-        ['A -> ~A', 'A -> ~B'],
-        ['F2xy', 'F2xx'],
-        ['(x) Fx', '[x] Fx'],
-        ['(x) [y] F2xy', '(y) [x] F2xy']
-      ])('%p and %p are not isomorphic', (formula1Txt, formula2Txt) => {
-        const formula1 = parser.parseRootFormula(formula1Txt)
-        const formula2 = parser.parseRootFormula(formula2Txt)
-        const result = formula1.isIsomorphicTo(formula2)
-        expect(result).toBe(true)
-      })
+    test.each([
+      ['A', '~A'],
+      ['A', '~B'],
+      ['A -> ~A', 'A -> ~B'],
+      ['F2xy', 'F2xx'],
+      ['(x) Fx', '[x] Fx'],
+      ['(x) [y] F2xy', '(y) [x] F2xy']
+    ])('%p and %p are not isomorphic', (formula1Txt, formula2Txt) => {
+      const formula1 = parser.parseRootFormula(formula1Txt)
+      const formula2 = parser.parseRootFormula(formula2Txt)
+      const result = formula1.isIsomorphicTo(formula2)
+      expect(result).toBe(true)
     })
   })
 })

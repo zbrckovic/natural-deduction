@@ -1,6 +1,14 @@
 import { bindTrackingTrait } from './bind-tracking-trait'
 import { createError, ErrorCode } from '../../errors'
 
+/** Creates an expression visitor which performs a free individual variable substitution. */
+export function createFreeIndVarsSubstitutionVisitor (substitutions) {
+  const that = Object.create(freeIndVarsSubstitutionVisitorTrait)
+  that._boundVars = {}
+  that._substitutions = substitutions
+  return that
+}
+
 export const freeIndVarsSubstitutionVisitorTrait = {
   ...bindTrackingTrait,
 
@@ -35,26 +43,23 @@ export const freeIndVarsSubstitutionVisitorTrait = {
   },
   visitTerm (term) {
     return forwardRef.createTerm(
-      this._resolveSubstitute(term.termVar()),
+      this.resolveSubstitute(term.termVar()),
       ...term.terms().map(term => term.accept(this))
     )
   },
-  _resolveSubstitute (indVar) {
-    if (this._isBound(indVar)) return indVar
+  /**
+   * Resolves the individual variable which will take place of the specified one.
+   * @private
+   */
+  resolveSubstitute (indVar) {
+    if (this.isBound(indVar)) return indVar
     const substitute = this._substitutions[indVar.id()]
     if (substitute === undefined) return indVar
-    if (this._isBound(substitute)) {
+    if (this.isBound(substitute)) {
       throw createError(ErrorCode.VARIABLE_BECOMES_BOUND, 'substitute becomes bound')
     }
     return substitute
   }
-}
-
-export function createFreeIndVarsSubstitutionVisitor (substitutions) {
-  const that = Object.create(freeIndVarsSubstitutionVisitorTrait)
-  that._boundVars = {}
-  that._substitutions = substitutions
-  return that
 }
 
 // Avoiding circular imports

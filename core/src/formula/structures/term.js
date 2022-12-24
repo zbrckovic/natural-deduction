@@ -3,29 +3,6 @@ import { createError, ErrorCode } from '../../errors'
 import { expressionTrait } from '../traits'
 import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
 
-function assertArityMatches (termVar, terms) {
-  if (termVar.arity() !== terms.length) {
-    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
-  }
-}
-
-const termTrait = {
-  ...expressionTrait,
-
-  termVar () {
-    return this._termVar
-  },
-  terms () {
-    return this._terms
-  },
-  isIndVar () {
-    return this.termVar().arity() === 0
-  },
-  accept (visitor) {
-    return visitor.visitTerm(this)
-  }
-}
-
 /**
  * It can be either simple like a single individual variable or complex like a function with
  * arguments.
@@ -50,6 +27,29 @@ export function createTerm (termVar, ...terms) {
   })
 
   return that
+}
+
+const termTrait = {
+  ...expressionTrait,
+
+  termVar () {
+    return this._termVar
+  },
+  terms () {
+    return this._terms
+  },
+  isIndVar () {
+    return this.termVar().arity() === 0
+  },
+  accept (visitor) {
+    return visitor.visitTerm(this)
+  }
+}
+
+function assertArityMatches (termVar, terms) {
+  if (termVar.arity() !== terms.length) {
+    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+  }
 }
 
 forwardRef.createTerm = createTerm

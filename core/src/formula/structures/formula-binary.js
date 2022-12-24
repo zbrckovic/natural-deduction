@@ -10,7 +10,6 @@ export function createBinaryFormula (operator, lFormula, rFormula) {
     _lFormula: lFormula,
     _rFormula: rFormula
   })
-
   return that
 }
 

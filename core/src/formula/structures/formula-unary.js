@@ -7,7 +7,6 @@ export function createUnaryFormula (operator, formula) {
     _operator: operator,
     _formula: formula
   })
-
   return that
 }
 
