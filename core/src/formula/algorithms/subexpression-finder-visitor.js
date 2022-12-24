@@ -33,7 +33,7 @@ const subformulaFinderTrait = {
   _isRoot () {
     return this._path.length === 0
   },
-  _confirmIndexIsZero: function (i) {
+  _confirmIndexIsZero (i) {
     if (i !== 0) throw new Error(`Invalid index ${i}`)
   }
 }

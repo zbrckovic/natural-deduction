@@ -53,7 +53,7 @@ describe('formula', () => {
     })
   })
 
-  describe('findFreeIndVars', function () {
+  describe('findFreeIndVars', () => {
     test.each([
       ['~A -> B', []],
       ['F(f(x))', ['x']],
@@ -79,7 +79,7 @@ describe('formula', () => {
     })
   })
 
-  describe('substituteFreeIndVars', function () {
+  describe('substituteFreeIndVars', () => {
     test.each([
       [
         'A',
@@ -138,7 +138,7 @@ describe('formula', () => {
     test.each([
       ['[x] F2xy', { y: 'x' }],
       ['(x) [y] (F2xy -> ~Gz)', { z: 'x' }]
-    ])('for %p and %p throws', function (formulaTxt, substitutionsRaw) {
+    ])('for %p and %p throws', (formulaTxt, substitutionsRaw) => {
       const formula = parser.parseRootFormula(formulaTxt)
 
       const substitutions = {}
