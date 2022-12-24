@@ -1,3 +1,5 @@
+import { createBimap } from '../../bimap'
+
 /**
  * Creates an expression visitor which checks whether this and other expression are isomorphic.
  * @param formula - The reference formula which will be checked for isomorphism against the visited

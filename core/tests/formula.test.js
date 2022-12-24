@@ -8,6 +8,38 @@ describe('formula', () => {
     parser = createParser()
   })
 
+  describe('equality', () => {
+    test.each([
+      ['A', 'A'],
+      ['~A', '~A'],
+      ['A -> B', 'A -> B'],
+      ['Fxy', 'Fxy'],
+      ['F(x, y)', 'Fxy'],
+      ['(x) F(x, y)', '(x) Fxy'],
+      ['F(x, f(y))', 'F(x, f(y))']
+    ])('%p and %p are equal', (formula1Text, formula2Text) => {
+      const formula1 = parser.parseRootFormula(formula1Text)
+      const formula2 = parser.parseRootFormula(formula2Text)
+      expect(formula1).toDeepEqual(formula2)
+    })
+
+    test.each([
+      ['A', 'B'],
+      ['Fx', 'Fy'],
+      ['Fx', 'Gx'],
+      ['Fxy', 'Fyx'],
+      ['~A', '~B'],
+      ['(x) A', '(y) A'],
+      ['F(x, f(y))', 'F(x, g(y))'],
+      ['F(x, f(x))', 'F(x, f(y))'],
+      ['(x) Fx', 'Fx']
+    ])('%p and %p are not equal', (formula1Text, formula2Text) => {
+      const formula1 = parser.parseRootFormula(formula1Text)
+      const formula2 = parser.parseRootFormula(formula2Text)
+      expect(formula1).not.toDeepEqual(formula2)
+    })
+  })
+
   describe('get', () => {
     it('returns the same formula for an empty path', () => {
       const formula = parser.parseRootFormula('[x] (Fx -> ~Gx)')

@@ -4,8 +4,15 @@ import {
   createFreeIndVarsSubstitutionVisitor
 } from './algorithms/free-ind-vars-substitution-visitor'
 import { BinaryOperator } from './structures/symbols'
+import { createExpressionTypeVisitor } from './algorithms/expression-type-visitor'
+import { equals } from '../utilities'
 
 export const expressionTrait = {
+  /** Returns an enum value representing the type of expression. */
+  type () {
+    const visitor = createExpressionTypeVisitor()
+    return this.accept(visitor)
+  },
   /**
    * Finds a subexpression by following the path.
    * @param path - The list of indices where each index represents the direction to take at the
@@ -29,6 +36,13 @@ export const expressionTrait = {
   },
   isIsomorphicTo (other) {
     return false
+  },
+  /**
+   * Compares two expression for equality.
+   * @param other - Must be an expression.
+   */
+  equals (other) {
+    return this.type() === other.type() && equals({ ...this }, { ...other })
   }
 }
 
