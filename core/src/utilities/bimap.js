@@ -62,6 +62,6 @@ function createDuplicateValuesError (key, value) {
   return error
 }
 
-export function isDuplicateValuesError (error) {
+export function isBimapDuplicateValuesError (error) {
   return Object.hasOwnProperty.call(error, DUPLICATE_VALUES_ERROR)
 }

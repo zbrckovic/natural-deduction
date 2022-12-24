@@ -1,4 +1,4 @@
-import { createBimap } from '../src/utils/map'
+import { createBimap } from '../src/utilities'
 
 describe('bimap', () => {
   let map
