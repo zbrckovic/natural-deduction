@@ -21,11 +21,8 @@ export function createTerm (termVar, ...terms) {
   }
 
   const that = Object.create(termTrait)
-  Object.assign(that, {
-    _termVar: realTermVar,
-    _terms: realTerms
-  })
-
+  that._termVar = realTermVar
+  that._terms = realTerms
   return that
 }
 
@@ -38,8 +35,11 @@ const termTrait = {
   terms () {
     return this._terms
   },
+  arity () {
+    return this.termVar().arity()
+  },
   isIndVar () {
-    return this.termVar().arity() === 0
+    return this.arity() === 0
   },
   accept (visitor) {
     return visitor.visitTerm(this)

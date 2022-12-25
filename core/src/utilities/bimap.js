@@ -15,7 +15,7 @@ const bimapTrait = {
   },
   /**
    * Inserts the key-value pair and returns the removed value if there is one (in case the key was
-   * already associated to some different value.
+   * already associated to some different value).
    */
   set (key, value) {
     const oldKey = this._rightToLeft[value]

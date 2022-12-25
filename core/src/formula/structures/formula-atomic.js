@@ -37,6 +37,9 @@ const atomicFormulaTrait = {
   terms () {
     return this._terms
   },
+  arity () {
+    return this.predVar().arity()
+  },
   accept (visitor) {
     return visitor.visitAtomicFormula(this)
   }

@@ -1,4 +1,4 @@
-import { createBimap } from '../../bimap'
+import { createVarBimap, equals } from '../../utilities'
 
 /**
  * Creates an expression visitor which checks whether this and other expression are isomorphic.
@@ -8,11 +8,111 @@ import { createBimap } from '../../bimap'
  */
 export function createIsomorphismCheckingVisitor (formula) {
   const that = Object.create(isomorphismCheckingVisitorTrait)
-  that._refFormula = formula
+
+  /**
+   * A stack whose head is the reference expression against which visited one is checked for
+   * isomorphism.
+   */
+  that._refExpressionStack = [formula]
+
   /** Bijection between reference formula variables and visited formula variables. */
-  that._varMap = {}
+  that._bimap = createVarBimap()
+
   return that
 }
 
 const isomorphismCheckingVisitorTrait = {
+  visitAtomicFormula: function (formula) {
+    const refFormula = this.refExpression()
+
+    if (refFormula.type() !== formula.type()) return false
+    if (refFormula.arity() !== formula.arity()) return false
+
+    try {
+      this.registerMapping(refFormula.predVar(), formula.predVar())
+    } catch (error) {
+      if (isAssociationError(error)) return false
+      throw error
+    }
+
+    return refFormula
+      .terms()
+      .every((refTerm, i) => {
+        const visTerm = formula.terms()[i]
+        return this.doWithRefExpression(
+          refTerm,
+          () => visTerm.accept(this))
+      })
+  },
+  visitTerm (term) {
+    const refTerm = this.refExpression()
+
+    if (refTerm.type() !== term.type()) return false
+    if (refTerm.arity() !== term.arity()) return false
+
+    try {
+      this.registerMapping(refTerm.termVar(), term.termVar())
+    } catch (error) {
+      if (isAssociationError(error)) return false
+      throw error
+    }
+
+    return refTerm
+      .terms()
+      .every((refTerm, i) => {
+        const visTerm = term.terms()[i]
+        return this.doWithRefExpression(
+          refTerm,
+          () => visTerm.accept(this))
+      })
+  },
+  /**
+   * Executes the action in the context of reference expression as head of the stack.
+   * @private
+   */
+  doWithRefExpression (refExpression, action) {
+    this._refExpressionStack.push(refExpression)
+    const result = action()
+    this._refExpressionStack.pop()
+    return result
+  },
+  /**
+   * Returns the head of the reference expression stack.
+   * @private
+   */
+  refExpression () {
+    return this._refExpressionStack[this._refExpressionStack.length - 1]
+  },
+  /**
+   * Adds the mapping between reference and visited variable and raises exception in case of
+   * conflict.
+   * @private
+   */
+  registerMapping (refVar, visVar) {
+    const prevVisVar = this._bimap.get(refVar)
+    if (prevVisVar !== undefined && !equals(prevVisVar, visVar)) {
+      // Reference variable has already been associated to some other variable
+      throw createAssociationError(refVar, visVar, prevVisVar)
+    }
+    this._bimap.set(refVar, visVar)
+  }
 }
+
+const { createAssociationError, isAssociationError } = (() => {
+  const ASSOCIATION_ERROR = Symbol('ASSOCIATION ERROR')
+
+  const createAssociationError = function (refVar, visVar, prevVisVar) {
+    const result = new Error(
+      `Attempted to associate ${refVar} to ${visVar} while ${refVar} has ` +
+      `already been associated to ${prevVisVar}.`
+    )
+    result[ASSOCIATION_ERROR] = true
+    return result
+  }
+
+  function isAssociationError (error) {
+    return error[ASSOCIATION_ERROR] === true
+  }
+
+  return { createAssociationError, isAssociationError }
+})()
