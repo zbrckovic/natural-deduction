@@ -32,6 +32,21 @@ const varBimapTrait = {
   has (keyVariable) {
     return this._bimap.has(keyVariable.id())
   },
+  remove (keyVariable) {
+    const removedVariableId = this._bimap.remove(keyVariable.id())
+    const removedVariable = removedVariableId !== undefined
+      ? this._variables[removedVariableId]
+      : undefined
+
+    const keyVariableIsAmongValues = this.inverse().has(keyVariable)
+    if (!keyVariableIsAmongValues) {
+      delete this._variables[keyVariable.id()]
+    }
+
+    if (removedVariable !== undefined && !this.has(removedVariable)) {
+      delete this._variables[removedVariableId]
+    }
+  },
   inverse () {
     const result = createVarBimap()
     result._bimap = this._bimap.inverse()

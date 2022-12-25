@@ -43,6 +43,14 @@ const bimapTrait = {
   has (key) {
     return this._leftToRight[key] !== undefined
   },
+  remove (key) {
+    const value = this._leftToRight[key]
+    delete this._leftToRight
+    if (value !== undefined) {
+      delete this._rightToLeft[value]
+    }
+    return value
+  },
   /**
    * Returns the inverted view of the map. State of the return map is shared with the original.
    */

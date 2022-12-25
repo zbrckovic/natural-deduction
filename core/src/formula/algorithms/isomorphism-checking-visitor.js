@@ -66,6 +66,41 @@ const isomorphismCheckingVisitorTrait = {
           () => visTerm.accept(this))
       })
   },
+  visitBinaryFormula (formula) {
+    const refFormula = this.refExpression()
+
+    if (refFormula.type() !== formula.type()) return false
+    if (refFormula.operator() !== formula.operator()) return false
+
+    return (
+      this.doWithRefExpression(refFormula.lFormula(), () => formula.lFormula().accept(this)) &&
+      this.doWithRefExpression(refFormula.rFormula(), () => formula.rFormula().accept(this))
+    )
+  },
+  visitUnaryFormula (formula) {
+    const refFormula = this.refExpression()
+
+    if (refFormula.type() !== formula.type()) return false
+    if (refFormula.operator() !== formula.operator()) return false
+
+    return this.doWithRefExpression(refFormula.formula(), () => formula.formula().accept(this))
+  },
+  visitQuantifiedFormula (formula) {
+    const refFormula = this.refExpression()
+
+    if (refFormula.type() !== formula.type()) return false
+    if (refFormula.quantifier() !== formula.quantifier()) return false
+
+    // reference individual variable
+    const refIndVar = refFormula.indVar()
+
+    // visited individual variable
+    const visIndVar = formula.indVar()
+
+    // Delete previous mappings temporarily before visiting descendants because the binding shadows
+    // those individual variables in both formulas.
+    // TODO: Finish this
+  },
   /**
    * Executes the action in the context of reference expression as head of the stack.
    * @private
@@ -98,7 +133,10 @@ const isomorphismCheckingVisitorTrait = {
   }
 }
 
-const { createAssociationError, isAssociationError } = (() => {
+const {
+  createAssociationError,
+  isAssociationError
+} = (() => {
   const ASSOCIATION_ERROR = Symbol('ASSOCIATION ERROR')
 
   const createAssociationError = function (refVar, visVar, prevVisVar) {
