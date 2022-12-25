@@ -1,6 +1,6 @@
 /**
- * Creates a bidirectional map which maintains a bijection between keys and values.
- * Keys and values must be strings.
+ * Creates a bidirectional map which maintains a bijection between keys and values. Keys and values
+ * must be strings.
  */
 export function createBimap () {
   const that = Object.create(bimapTrait)
@@ -10,6 +10,7 @@ export function createBimap () {
 }
 
 const bimapTrait = {
+  /** Returns the value associated to the provided key. */
   get (key) {
     return this._leftToRight[key]
   },
@@ -43,6 +44,10 @@ const bimapTrait = {
   has (key) {
     return this._leftToRight[key] !== undefined
   },
+  /**
+   * Removes the key and the associated value. It returns the removed value if one has actually
+   * been removed.
+   */
   remove (key) {
     const value = this._leftToRight[key]
     delete this._leftToRight

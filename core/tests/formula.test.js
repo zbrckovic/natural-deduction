@@ -8,7 +8,7 @@ describe('formula', () => {
     parser = createParser()
   })
 
-  describe('createAtomicFormula', () => {
+  describe('createAtomicFormula()', () => {
     it('throws when predVar arity doesn\'t match the terms count', () => {
       expect(() => {
         createAtomicFormula(createVariable('F', 1), 'x', 'y')
@@ -16,7 +16,7 @@ describe('formula', () => {
     })
   })
 
-  describe('createTerm', () => {
+  describe('createTerm()', () => {
     it('throws when termVar arity doesn\'t match the terms count', () => {
       expect(() => {
         createTerm(createVariable('f', 1), 'x', 'y')
@@ -24,7 +24,7 @@ describe('formula', () => {
     })
   })
 
-  describe('get', () => {
+  describe('get()', () => {
     it('returns the same formula for an empty path', () => {
       const formula = parser.parseRootFormula('[x] (Fx -> ~Gx)')
       const subformula = formula.get()
@@ -53,7 +53,7 @@ describe('formula', () => {
     })
   })
 
-  describe('findFreeIndVars', () => {
+  describe('findFreeIndVars()', () => {
     test.each([
       ['~A -> B', []],
       ['F(f(x))', ['x']],
@@ -79,7 +79,7 @@ describe('formula', () => {
     })
   })
 
-  describe('substituteFreeIndVars', () => {
+  describe('substituteFreeIndVars()', () => {
     test.each([
       [
         'A',
@@ -151,7 +151,7 @@ describe('formula', () => {
     })
   })
 
-  describe('isIsomorphicTo', () => {
+  describe('isIsomorphicTo()', () => {
     test.each([
       ['A', 'A'],
       ['A', 'B'],

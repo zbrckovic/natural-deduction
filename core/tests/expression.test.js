@@ -7,7 +7,7 @@ describe('expression', () => {
     parser = createParser()
   })
 
-  describe('type', () => {
+  describe('type()', () => {
     test(`returns ${ExpressionType.TERM} for for simple term`, () => {
       const expression = parser.parseTerm('x')
       expect(expression.type()).toEqual(ExpressionType.TERM)
@@ -44,7 +44,7 @@ describe('expression', () => {
     })
   })
 
-  describe('equals', () => {
+  describe('equals()', () => {
     test.each([
       ['A', 'A'],
       ['~A', '~A'],

@@ -14,29 +14,43 @@ describe('bimap', () => {
     })
   })
 
-  it('remembers inserted key-value pair', () => {
-    map.set('x', 'y')
-    expect(map.get('x')).toBe('y')
-  })
-
-  it('allows overwriting the key', () => {
-    map.set('x', 'y')
-    map.set('x', 'z')
-    expect(map.get('x')).toBe('z')
-  })
-
-  it('allows inserting the same pair twice', () => {
-    map.set('x', 'y')
-    expect(() => {
+  describe('set()', () => {
+    it('inserts key-value pair', () => {
       map.set('x', 'y')
-    }).not.toThrow()
+      expect(map.get('x')).toBe('y')
+    })
+
+    it('overwrites the key', () => {
+      map.set('x', 'y')
+      map.set('x', 'z')
+      expect(map.get('x')).toBe('z')
+    })
+
+    it('allows inserting the same pair twice', () => {
+      map.set('x', 'y')
+      expect(() => {
+        map.set('x', 'y')
+      }).not.toThrow()
+    })
+
+    it('throws for value duplication', () => {
+      map.set('x', 'y')
+      expect(() => {
+        map.set('x2', 'y')
+      }).toThrow()
+    })
   })
 
-  it('throws for value duplication', () => {
-    map.set('x', 'y')
-    expect(() => {
-      map.set('x2', 'y')
-    }).toThrow()
+  describe('remove()', () => {
+    it('removes existing key and its associated value', () => {
+      map.set('x', 'y')
+      const removedValue = map.remove('x')
+      expect(removedValue).toBe('y')
+    })
+    it('works for non-existing keys', () => {
+      const removedValue = map.remove('x')
+      expect(removedValue).toBe(undefined)
+    })
   })
 
   describe('inverse()', () => {
