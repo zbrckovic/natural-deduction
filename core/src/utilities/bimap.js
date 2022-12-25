@@ -50,15 +50,13 @@ const bimapTrait = {
    */
   remove (key) {
     const value = this._leftToRight[key]
-    delete this._leftToRight
+    delete this._leftToRight[key]
     if (value !== undefined) {
       delete this._rightToLeft[value]
     }
     return value
   },
-  /**
-   * Returns the inverted view of the map. State of the return map is shared with the original.
-   */
+  /** Returns the inverted view of the map. State of the return map is shared with the original. */
   inverse () {
     const result = createBimap()
     result._leftToRight = this._rightToLeft

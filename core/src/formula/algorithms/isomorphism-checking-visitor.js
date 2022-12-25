@@ -1,4 +1,4 @@
-import { createVarBimap, equals } from '../../utilities'
+import { createVarBimap, equals, isBimapDuplicateValuesError } from '../../utilities'
 
 /**
  * Creates an expression visitor which checks whether this and other expression are isomorphic.
@@ -31,7 +31,7 @@ const isomorphismCheckingVisitorTrait = {
     try {
       this.registerMapping(refFormula.predVar(), formula.predVar())
     } catch (error) {
-      if (isAssociationError(error)) return false
+      if (isAssociationError(error) || isBimapDuplicateValuesError(error)) return false
       throw error
     }
 
@@ -99,7 +99,37 @@ const isomorphismCheckingVisitorTrait = {
 
     // Delete previous mappings temporarily before visiting descendants because the binding shadows
     // those individual variables in both formulas.
-    // TODO: Finish this
+    const prevVisIndVar = this._bimap.remove(refIndVar)
+    const prevRefIndVar = this._bimap.inverse().remove(visIndVar)
+
+    try {
+      // Add temporary mapping for current binding individual variable.
+      this.registerMapping(refIndVar, formula.indVar())
+
+      const isIsomorphic = this.doWithRefExpression(refFormula.formula(), () => {
+        return formula.formula().accept(this)
+      })
+
+      if (!isIsomorphic) return false
+
+      // Remove temporary mapping for current binding individual variable.
+      this.unregister(refIndVar)
+
+      // Return previously deleted mappings.
+      if (prevVisIndVar !== undefined) {
+        this.registerMapping(refIndVar, prevVisIndVar)
+      }
+      if (prevRefIndVar !== undefined) {
+        this.registerMapping(prevRefIndVar, visIndVar)
+      }
+    } catch (error) {
+      if (isAssociationError(error)) {
+        return false
+      } else {
+        throw error
+      }
+    }
+    return true
   },
   /**
    * Executes the action in the context of reference expression as head of the stack.
@@ -130,6 +160,9 @@ const isomorphismCheckingVisitorTrait = {
       throw createAssociationError(refVar, visVar, prevVisVar)
     }
     this._bimap.set(refVar, visVar)
+  },
+  unregister (refVar) {
+    this._bimap.remove(refVar)
   }
 }
 

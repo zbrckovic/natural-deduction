@@ -6,6 +6,7 @@ import {
 import { BinaryOperator } from './structures/symbols'
 import { createExpressionTypeVisitor } from './algorithms/expression-type-visitor'
 import { equals } from '../utilities'
+import { createIsomorphismCheckingVisitor } from './algorithms/isomorphism-checking-visitor'
 
 export const expressionTrait = {
   /** Returns an enum value representing the type of expression. */
@@ -22,9 +23,7 @@ export const expressionTrait = {
     const visitor = createSubformulaFinderVisitor(path)
     return this.accept(visitor)
   },
-  /**
-   * Finds free individual variables and returns them as a map (variables by ids).
-   */
+  /** Finds free individual variables and returns them as a map (variables by ids). */
   findFreeIndVars () {
     const visitor = createFreeIndVarsFinderVisitor()
     return this.accept(visitor)
@@ -35,7 +34,8 @@ export const expressionTrait = {
     return this.accept(visitor)
   },
   isIsomorphicTo (other) {
-    return false
+    const visitor = createIsomorphismCheckingVisitor(other)
+    return this.accept(visitor)
   },
   /**
    * Compares two expression for equality.
@@ -49,30 +49,22 @@ export const expressionTrait = {
 export const formulaTrait = {
   ...expressionTrait,
 
-  /**
-   * Creates a conjunctive formula.
-   */
+  /** Creates a conjunctive formula. */
   and (formula) {
     return forwardRef.createBinaryFormula(BinaryOperator.CONJUNCTION, this, formula)
   },
 
-  /**
-   * Creates a disjunctive formula.
-   */
+  /** Creates a disjunctive formula. */
   or (formula) {
     return forwardRef.createBinaryFormula(BinaryOperator.DISJUNCTION, this, formula)
   },
 
-  /**
-   * Creates a conditional formula.
-   */
+  /** Creates a conditional formula. */
   then (formula) {
     return forwardRef.createBinaryFormula(BinaryOperator.CONDITIONAL, this, formula)
   },
 
-  /**
-   * Creates a biconditional formula.
-   */
+  /** Creates a biconditional formula. */
   onlyThen (formula) {
     return forwardRef.createBinaryFormula(BinaryOperator.BICONDITIONAL, this, formula)
   }
