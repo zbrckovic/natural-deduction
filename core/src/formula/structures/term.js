@@ -48,7 +48,7 @@ const termTrait = {
 
 function assertArityMatches (termVar, terms) {
   if (termVar.arity() !== terms.length) {
-    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+    throw createError(ErrorCode.INVALID_ARITY, 'invalid arity')
   }
 }
 

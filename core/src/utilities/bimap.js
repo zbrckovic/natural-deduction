@@ -21,15 +21,15 @@ const bimapTrait = {
   set (key, value) {
     const oldKey = this._rightToLeft[value]
     if (oldKey !== undefined) {
-      // The value already exists
+      // The value already exists.
       if (oldKey !== key) {
-        // The value is already associated with some other key
+        // The value is already associated with some other key.
         throw createDuplicateValuesError(oldKey, value)
       } else {
-        // The value is already associated with this key so there's nothing left to do
+        // The value is already associated with this key so there's nothing left to do.
       }
     } else {
-      // The value is new
+      // The value is new.
       const oldValue = this._leftToRight[key]
       if (oldValue !== undefined) {
         // The key is already associated with some other value. Remove it!
@@ -65,14 +65,23 @@ const bimapTrait = {
   }
 }
 
-const DUPLICATE_VALUES_ERROR = Symbol('DUPLICATE_VALUES_ERROR')
+const {
+  createDuplicateValuesError,
+  isBimapDuplicateValuesError
+} = (() => {
+  const DUPLICATE_VALUES_ERROR = Symbol('DUPLICATE_VALUES_ERROR')
 
-function createDuplicateValuesError (key, value) {
-  const error = new Error(`Value ${value} is already associated with key ${key}`)
-  error[DUPLICATE_VALUES_ERROR] = true
-  return error
-}
+  function createDuplicateValuesError (key, value) {
+    const error = new Error(`value ${value} already associated with key ${key}`)
+    error[DUPLICATE_VALUES_ERROR] = true
+    return error
+  }
 
-export function isBimapDuplicateValuesError (error) {
-  return Object.hasOwnProperty.call(error, DUPLICATE_VALUES_ERROR)
-}
+  function isBimapDuplicateValuesError (error) {
+    return Object.hasOwnProperty.call(error, DUPLICATE_VALUES_ERROR)
+  }
+
+  return { createDuplicateValuesError, isBimapDuplicateValuesError }
+})()
+
+export { isBimapDuplicateValuesError }

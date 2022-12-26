@@ -2,9 +2,9 @@ import { createVarBimap, equals, isBimapDuplicateValuesError } from '../../utili
 
 /**
  * Creates an expression visitor which checks whether this and other expression are isomorphic.
- * @param formula - The reference formula which will be checked for isomorphism against the visited
- * formula. Isomorphism is a symmetric relation, so it is not important which formula is the
- * reference formula and which is the visited one.
+ * @param formula - The reference expression which will be checked for isomorphism against the
+ * visited one. Isomorphism is a symmetric relation, so it is not important which expression is the
+ * reference expression and which is the visited one.
  */
 export function createIsomorphismCheckingVisitor (formula) {
   const that = Object.create(isomorphismCheckingVisitorTrait)
@@ -15,60 +15,17 @@ export function createIsomorphismCheckingVisitor (formula) {
    */
   that._refExpressionStack = [formula]
 
-  /** Bijection between reference formula variables and visited formula variables. */
+  /** Bijection between reference expression variables and visited expression variables. */
   that._bimap = createVarBimap()
 
   return that
 }
 
 const isomorphismCheckingVisitorTrait = {
-  visitAtomicFormula: function (formula) {
-    const refFormula = this.refExpression()
-
-    if (refFormula.type() !== formula.type()) return false
-    if (refFormula.arity() !== formula.arity()) return false
-
-    try {
-      this.registerMapping(refFormula.predVar(), formula.predVar())
-    } catch (error) {
-      if (isAssociationError(error) || isBimapDuplicateValuesError(error)) return false
-      throw error
-    }
-
-    return refFormula
-      .terms()
-      .every((refTerm, i) => {
-        const visTerm = formula.terms()[i]
-        return this.doWithRefExpression(
-          refTerm,
-          () => visTerm.accept(this))
-      })
-  },
-  visitTerm (term) {
-    const refTerm = this.refExpression()
-
-    if (refTerm.type() !== term.type()) return false
-    if (refTerm.arity() !== term.arity()) return false
-
-    try {
-      this.registerMapping(refTerm.termVar(), term.termVar())
-    } catch (error) {
-      if (isAssociationError(error)) return false
-      throw error
-    }
-
-    return refTerm
-      .terms()
-      .every((refTerm, i) => {
-        const visTerm = term.terms()[i]
-        return this.doWithRefExpression(
-          refTerm,
-          () => visTerm.accept(this))
-      })
-  },
   visitBinaryFormula (formula) {
     const refFormula = this.refExpression()
 
+    // Confirm that expressions are comparable.
     if (refFormula.type() !== formula.type()) return false
     if (refFormula.operator() !== formula.operator()) return false
 
@@ -88,6 +45,7 @@ const isomorphismCheckingVisitorTrait = {
   visitQuantifiedFormula (formula) {
     const refFormula = this.refExpression()
 
+    // Confirm that expressions are comparable.
     if (refFormula.type() !== formula.type()) return false
     if (refFormula.quantifier() !== formula.quantifier()) return false
 
@@ -113,7 +71,7 @@ const isomorphismCheckingVisitorTrait = {
       if (!isIsomorphic) return false
 
       // Remove temporary mapping for current binding individual variable.
-      this.unregister(refIndVar)
+      this.unregisterMapping(refIndVar)
 
       // Return previously deleted mappings.
       if (prevVisIndVar !== undefined) {
@@ -130,6 +88,52 @@ const isomorphismCheckingVisitorTrait = {
       }
     }
     return true
+  },
+  visitAtomicFormula (formula) {
+    const refFormula = this.refExpression()
+
+    // Confirm that expressions are comparable.
+    if (refFormula.type() !== formula.type()) return false
+    if (refFormula.arity() !== formula.arity()) return false
+
+    try {
+      this.registerMapping(refFormula.predVar(), formula.predVar())
+    } catch (error) {
+      if (isAssociationError(error) || isBimapDuplicateValuesError(error)) return false
+      throw error
+    }
+
+    return refFormula
+      .terms()
+      .every((refTerm, i) => {
+        const visTerm = formula.terms()[i]
+        return this.doWithRefExpression(
+          refTerm,
+          () => visTerm.accept(this))
+      })
+  },
+  visitTerm (term) {
+    const refTerm = this.refExpression()
+
+    // Confirm that expressions are comparable.
+    if (refTerm.type() !== term.type()) return false
+    if (refTerm.arity() !== term.arity()) return false
+
+    try {
+      this.registerMapping(refTerm.termVar(), term.termVar())
+    } catch (error) {
+      if (isAssociationError(error)) return false
+      throw error
+    }
+
+    return refTerm
+      .terms()
+      .every((refTerm, i) => {
+        const visTerm = term.terms()[i]
+        return this.doWithRefExpression(
+          refTerm,
+          () => visTerm.accept(this))
+      })
   },
   /**
    * Executes the action in the context of reference expression as head of the stack.
@@ -149,19 +153,21 @@ const isomorphismCheckingVisitorTrait = {
     return this._refExpressionStack[this._refExpressionStack.length - 1]
   },
   /**
-   * Adds the mapping between reference and visited variable and raises exception in case of
-   * conflict.
+   * Adds the mapping between reference and visited variable.
    * @private
+   * @throws Throws an error in case of variable conflict.
    */
   registerMapping (refVar, visVar) {
     const prevVisVar = this._bimap.get(refVar)
     if (prevVisVar !== undefined && !equals(prevVisVar, visVar)) {
-      // Reference variable has already been associated to some other variable
+      // Reference variable has already been associated to some other variable.
       throw createAssociationError(refVar, visVar, prevVisVar)
+    } else {
+      this._bimap.set(refVar, visVar)
     }
-    this._bimap.set(refVar, visVar)
   },
-  unregister (refVar) {
+  /** @private */
+  unregisterMapping (refVar) {
     this._bimap.remove(refVar)
   }
 }
@@ -174,7 +180,7 @@ const {
 
   const createAssociationError = function (refVar, visVar, prevVisVar) {
     const result = new Error(
-      `Attempted to associate ${refVar} to ${visVar} while ${refVar} has ` +
+      `attempted to associate ${refVar} to ${visVar} while ${refVar} has ` +
       `already been associated to ${prevVisVar}.`
     )
     result[ASSOCIATION_ERROR] = true

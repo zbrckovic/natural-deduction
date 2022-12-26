@@ -47,7 +47,7 @@ const atomicFormulaTrait = {
 
 function assertArityMatches (predVar, terms) {
   if (predVar.arity() !== terms.length) {
-    throw createError(ErrorCode.INVALID_ARITY, 'Invalid arity')
+    throw createError(ErrorCode.INVALID_ARITY, 'invalid arity')
   }
 }
 

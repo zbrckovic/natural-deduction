@@ -42,7 +42,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     if (ctx.atomicFormula() !== null) {
       return this.visitAtomicFormula(ctx.atomicFormula())
     }
-    throw new Error('Invalid context') // Shouldn't happen
+    throw new Error('invalid context') // shouldn't happen
   }
 
   visitCompRootFormula (ctx) {
@@ -52,7 +52,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     if (ctx.compUnaryFormula() !== null) {
       return this.visitCompUnaryFormula(ctx.compUnaryFormula())
     }
-    throw new Error('Invalid context') // Shouldn't happen
+    throw new Error('invalid context') // shouldn't happen
   }
 
   visitCompFormula (ctx) {
@@ -62,7 +62,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     if (ctx.compUnaryFormula() !== null) {
       return this.visitCompUnaryFormula(ctx.compUnaryFormula())
     }
-    throw new Error('Invalid context') // Shouldn't happen
+    throw new Error('invalid context') // shouldn't happen
   }
 
   visitCompRootBinaryFormula (ctx) {
@@ -97,7 +97,7 @@ export class AstVisitor extends NaturalDeductionVisitor {
     if (ctx.exiFormula() !== null) {
       return this.visitExiFormula(ctx.exiFormula())
     }
-    throw new Error('Invalid context') // Shouldn't happen
+    throw new Error('invalid context') // shouldn't happen
   }
 
   visitUniFormula (ctx) {

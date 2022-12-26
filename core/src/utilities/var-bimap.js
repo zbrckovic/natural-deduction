@@ -28,9 +28,9 @@ const varBimapTrait = {
       : undefined
 
     if (removedValueVar !== undefined) {
-      // removedValueVar is no longer among values
+      // `removedValueVar` is no longer among values.
       if (!this.has(removedValueVar)) {
-        // removedValueVar is not among keys either, so it can be removed from variables store
+        // `removedValueVar` is not among keys either, so it can be removed from variables store.
         delete this._variables[removedValueVar.id()]
       }
     }
@@ -49,11 +49,16 @@ const varBimapTrait = {
       : undefined
 
     if (!this.inverse().has(keyVar)) {
+      // The key doesn't occur among values, so it can be removed from variables store.
       delete this._variables[keyVar.id()]
     }
 
-    if (removedValueVar !== undefined && !this.has(removedValueVar)) {
-      delete this._variables[removedValueVar.id()]
+    if (removedValueVar !== undefined) {
+      // `removedValueVar` is no longer among values.
+      if (!this.has(removedValueVar)) {
+        // `removedValueVar` is not among keys either, so it can be removed from variables store.
+        delete this._variables[removedValueVar.id()]
+      }
     }
 
     return removedValueVar

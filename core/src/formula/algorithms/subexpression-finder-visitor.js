@@ -43,6 +43,6 @@ const subformulaFinderTrait = {
   },
   /** @private */
   confirmIndexIsZero (i) {
-    if (i !== 0) throw new Error(`Invalid index ${i}`)
+    if (i !== 0) throw new Error(`invalid index ${i}`)
   }
 }

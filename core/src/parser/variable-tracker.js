@@ -21,7 +21,7 @@ export class VariableTracker {
       if (!equals(existingVariable, variable)) {
         throw createError(
           ErrorCode.VARIABLE_COLLISION,
-          `Cannot register variable ${variable} as it has the same id as already registered ` +
+          `cannot register variable ${variable} as it has the same id as already registered ` +
           `variable ${existingVariable}`)
       }
     }
