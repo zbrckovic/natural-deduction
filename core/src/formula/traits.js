@@ -47,7 +47,8 @@ export const expressionTrait = {
    */
   findFreeIndVarSubstitution (formula) {
     const visitor = createFreeIndVarSubstitutionFinderVisitor(this)
-    return formula.accept(visitor)
+    formula.accept(visitor)
+    return visitor.result()
   },
   /**
    * Compares two expression for equality.

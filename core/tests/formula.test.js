@@ -164,7 +164,7 @@ describe('formula', () => {
     ])('for formulas %p for %p returns %p', (formula1Txt, formula2Txt, substitutionsRaw) => {
       const formula1 = parser.parseRootFormula(formula1Txt)
       const formula2 = parser.parseRootFormula(formula2Txt)
-      const expectedSubstitution = substitutionsRaw?.map(createVariable)
+      const expectedSubstitution = substitutionsRaw?.map(id => createVariable(id))
       const substitution = formula1.findFreeIndVarSubstitution(formula2)
       expect(substitution).toDeepEqual(expectedSubstitution)
     })

@@ -1,4 +1,4 @@
-import { formulaComparingVisitorTrait } from './formula-comparing-visitor-trait'
+import { expressionComparingVisitorTrait } from './expression-comparing-visitor-trait'
 import { bindTrackingTrait } from './bind-tracking-trait'
 import { equals } from '../../utilities'
 
@@ -20,27 +20,35 @@ export function createFreeIndVarSubstitutionFinderVisitor (expression) {
    */
   that._boundVars = {}
 
-  /** Free individual variables which are equal in both formulas. */
-  that._freeIndVars = {}
+  /** Free individual variables which are equal in both expressions. */
+  that._freeIndVarsEqualInBoth = {}
 
-  /** Free individual variable in the reference formula which has been substituted. */
+  /** Free individual variable in the reference expression which has been substituted. */
   that._refIndVar = undefined
 
-  /** A substitute for `ref_ind_var` in the visited formula. */
+  /** A substitute for `_refIndVar` in the visited expression. */
   that._visIndVar = undefined
 
   return that
 }
 
 const freeIndVarSubstitutionFinderVisitorTrait = {
-  ...formulaComparingVisitorTrait,
+  ...expressionComparingVisitorTrait,
   ...bindTrackingTrait,
+  result() {
+    if (this._refIndVar !== undefined) {
+      return [this._refIndVar, this._visIndVar]
+    } else {
+      return undefined
+    }
+  },
   visitBinaryFormula (formula) {
     const refFormula = this.refExpression()
 
     // Confirm that expressions are comparable.
-    if (refFormula.type() !== formula.type()) throw new FormulasNotComparable()
-    if (refFormula.operator() !== formula.operator()) throw new FormulasNotComparable()
+    if (refFormula.type() !== formula.type() || refFormula.operator() !== formula.operator()) {
+      throw new FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+    }
 
     this.doWithRefExpression(refFormula.lFormula(), () => formula.lFormula().accept(this))
     this.doWithRefExpression(refFormula.rFormula(), () => formula.rFormula().accept(this))
@@ -48,8 +56,10 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
   visitUnaryFormula (formula) {
     const refFormula = this.refExpression()
 
-    if (refFormula.type() !== formula.type()) throw new FormulasNotComparable()
-    if (refFormula.operator() !== formula.operator()) throw new FormulasNotComparable()
+    // Confirm that expressions are comparable.
+    if (refFormula.type() !== formula.type() || refFormula.operator() !== formula.operator()) {
+      throw FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+    }
 
     this.doWithRefExpression(refFormula.formula(), () => formula.formula().accept(this))
   },
@@ -57,14 +67,15 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
     const refFormula = this.refExpression()
 
     // Confirm that expressions are comparable.
-    if (refFormula.type() !== formula.type()) throw new FormulasNotComparable()
-    if (refFormula.quantifier() !== formula.quantifier()) throw new FormulasNotComparable()
+    if (refFormula.type() !== formula.type() || refFormula.quantifier() !== formula.quantifier()) {
+      throw new FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+    }
 
     const refIndVar = refFormula.indVar()
     const visIndVar = formula.indVar()
 
     if (!equals(refIndVar, visIndVar)) {
-      throw new BindingVariablesNotEqual()
+      throw new FreeIndVarSubstitutionFinderVisitorError('binding variables not equal')
     }
 
     this.doWithBoundIndVar(refIndVar, () => {
@@ -77,22 +88,22 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
     const refFormula = this.refExpression()
 
     // Confirm that expressions are comparable.
-    if (refFormula.type() !== formula.type()) throw new FormulasNotComparable()
-    if (refFormula.arity() !== formula.arity()) throw new FormulasNotComparable()
+    if (refFormula.type() !== formula.type() || refFormula.arity() !== formula.arity()) {
+      throw new FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+    }
 
     return refFormula.terms().forEach((refTerm, i) => {
       const visTerm = formula.terms()[i]
-      this.doWithRefExpression(
-        refTerm,
-        () => visTerm.accept(this))
+      this.doWithRefExpression(refTerm, () => visTerm.accept(this))
     })
   },
   visitTerm (term) {
     const refTerm = this.refExpression()
 
     // Confirm that expressions are comparable.
-    if (refTerm.type() !== term.type()) throw new FormulasNotComparable()
-    if (refTerm.arity() !== term.arity()) throw new FormulasNotComparable()
+    if (refTerm.type() !== term.type() || refTerm.arity() !== term.arity()) {
+      throw new FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+    }
 
     if (refTerm.isIndVar()) {
       const refIndVar = refTerm.termVar()
@@ -100,21 +111,25 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
 
       if (this.isBound(refIndVar)) {
         if (!equals(refIndVar, visIndVar)) {
-          throw new BoundVarsNotEqual()
+          throw new FreeIndVarSubstitutionFinderVisitorError('bound variables not equal')
         }
       } else {
         this.registerFreeIndVars(refIndVar, visIndVar)
       }
+    } else {
+      if (!equals(refTerm.termVar(), term.termVar())) {
+        throw new FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+      } else {
+        refTerm.terms().forEach((refTerm, i) => {
+          const visTerm = term.terms()[i]
+          this.doWithRefExpression(refTerm, () => visTerm.accept(this))
+        })
+      }
     }
-
-    return refTerm.terms().forEach((refTerm, i) => {
-      const visTerm = term.terms()[i]
-      this.doWithRefExpression(refTerm, () => visTerm.accept(this))
-    })
   },
   registerFreeIndVars (refIndVar, visIndVar) {
     if (this.isBound(visIndVar)) {
-      throw new SubstituteBecomesBoundError()
+      throw new FreeIndVarSubstitutionFinderVisitorError('substitute becomes bound')
     }
 
     if (equals(refIndVar, visIndVar)) {
@@ -122,71 +137,35 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
 
       if (equals(this._refIndVar, refIndVar)) {
         // ... but it has been registered as a difference.
-        throw new SubstitutionNotTotal('substitution not total')
+        throw new FreeIndVarSubstitutionFinderVisitorError('substitution not total')
       } else {
-        this._freeIndVars[refIndVar.id()] = refIndVar
+        this._freeIndVarsEqualInBoth[refIndVar.id()] = refIndVar
       }
     } else {
       // Variables are different.
 
-      if (this._freeIndVars[refIndVar.id()] !== undefined) {
-        throw new SubstitutionNotTotal('substitution not total')
-      }
-
-      if (this._refIndVar === undefined) {
+      if (this._freeIndVarsEqualInBoth[refIndVar.id()] !== undefined) {
+        throw new FreeIndVarSubstitutionFinderVisitorError('substitution not total')
+      } else if (this._refIndVar === undefined) {
         // This is the first pair of different variables so far.
-        this.refIndVar = refIndVar
-        this.visIndVar = visIndVar
+        this._refIndVar = refIndVar
+        this._visIndVar = visIndVar
       } else {
         // Some variable has already been registered.
         if (!equals(refIndVar, refIndVar)) {
-          throw new ExpressionsDifferInMoreThanOneVariable()
-        } else if (!equals(this.visIndVar, visIndVar)) {
-          throw new SubstitutionNotUniform()
+          throw new FreeIndVarSubstitutionFinderVisitorError(
+            'expressions differ in more than one variable'
+          )
+        } else if (!equals(this._visIndVar, visIndVar)) {
+          throw new FreeIndVarSubstitutionFinderVisitorError('substitution not uniform')
         }
       }
     }
   }
 }
 
-export class SubstituteBecomesBoundError extends Error {
+export class FreeIndVarSubstitutionFinderVisitorError extends Error {
   constructor () {
     super('substitute becomes bound')
-  }
-}
-
-export class FormulasNotComparable extends Error {
-  constructor () {
-    super('formulas not comparable')
-  }
-}
-
-export class BoundVarsNotEqual extends Error {
-  constructor () {
-    super('bound variables not equal')
-  }
-}
-
-export class BindingVariablesNotEqual extends Error {
-  constructor () {
-    super('binding variables not equal')
-  }
-}
-
-export class SubstitutionNotTotal extends Error {
-  constructor () {
-    super('substitution not total')
-  }
-}
-
-export class ExpressionsDifferInMoreThanOneVariable extends Error {
-  constructor () {
-    super('formulas differ in more than one free individual variable')
-  }
-}
-
-export class SubstitutionNotUniform extends Error {
-  constructor () {
-    super('substitution not uniform')
   }
 }

@@ -1,5 +1,5 @@
 import { DuplicateValuesError, createVarBimap, equals } from '../../utilities'
-import { formulaComparingVisitorTrait } from './formula-comparing-visitor-trait'
+import { expressionComparingVisitorTrait } from './expression-comparing-visitor-trait'
 
 /**
  * Creates an expression visitor which checks whether this and other expression are isomorphic.
@@ -23,7 +23,7 @@ export function createIsomorphismCheckingVisitor (expression) {
 }
 
 const isomorphismCheckingVisitorTrait = {
-  ...formulaComparingVisitorTrait,
+  ...expressionComparingVisitorTrait,
   visitBinaryFormula (formula) {
     const refFormula = this.refExpression()
 

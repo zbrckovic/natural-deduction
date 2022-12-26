@@ -1,4 +1,4 @@
-export const formulaComparingVisitorTrait = {
+export const expressionComparingVisitorTrait = {
   /** Executes the action in the context of reference expression as head of the stack. */
   doWithRefExpression (refExpression, action) {
     this._refExpressionStack.push(refExpression)
