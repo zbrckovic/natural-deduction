@@ -169,12 +169,12 @@ describe('formula', () => {
     })
 
     test.each([
-      ['A', '~A']
-      // ['A', '~B'],
-      // ['A -> ~A', 'A -> ~B'],
-      // ['F2xy', 'F2xx'],
-      // ['(x) Fx', '[x] Fx'],
-      // ['(x) [y] F2xy', '(y) [x] F2xy']
+      ['A', '~A'],
+      ['A', '~B'],
+      ['A -> ~A', 'A -> ~B'],
+      ['F2xy', 'F2xx'],
+      ['(x) Fx', '[x] Fx'],
+      ['(x) [y] F2xy', '(y) [x] F2xy']
     ])('returns false for %p and %p', (formula1Txt, formula2Txt) => {
       const formula1 = parser.parseRootFormula(formula1Txt)
       const formula2 = parser.parseRootFormula(formula2Txt)
