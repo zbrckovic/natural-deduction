@@ -158,6 +158,7 @@ describe('formula', () => {
       ['A -> ~B', 'B -> ~A'],
       ['Fx', 'Gy'],
       ['F2xy', 'G2yx'],
+      ['F(f(x, y))', 'F(g(y, x))'],
       ['(x) [y] F2xy', '(y) [x] G2yx'],
       ['(x) [y] F2xy', '(y) [x] G2yx'],
       ['(x) (F2xy & [x] Gx)', '(y) (F2yz & [z] Gz)']
@@ -173,6 +174,7 @@ describe('formula', () => {
       ['A', '~B'],
       ['A -> ~A', 'A -> ~B'],
       ['F2xy', 'F2xx'],
+      ['F(f(x, y))', 'F(g(y, y))'],
       ['(x) Fx', '[x] Fx'],
       ['(x) [y] F2xy', '(y) [x] F2xy']
     ])('returns false for %p and %p', (formula1Txt, formula2Txt) => {
