@@ -81,46 +81,14 @@ describe('formula', () => {
 
   describe('substituteFreeIndVars()', () => {
     test.each([
-      [
-        'A',
-        {},
-        'A'
-      ],
-      [
-        'Fx',
-        {},
-        'Fx'
-      ],
-      [
-        'Fx',
-        { x: 'x' },
-        'Fx'
-      ],
-      [
-        'Fx',
-        { x: 'y' },
-        'Fy'
-      ],
-      [
-        '(x) Fx',
-        { x: 'y' },
-        '(x) Fx'
-      ],
-      [
-        'F2xx',
-        { x: 'y' },
-        'F2yy'
-      ],
-      [
-        'F2xy',
-        { x: 'y', y: 'x' },
-        'F2yx'
-      ],
-      [
-        '(F2xy -> ~G2yx) & [x] F2yx',
-        { x: 'y', y: 'z' },
-        '(F2yz -> ~G2zy) & [x] F2zx'
-      ]
+      ['A', {}, 'A'],
+      ['Fx', {}, 'Fx'],
+      ['Fx', { x: 'x' }, 'Fx'],
+      ['Fx', { x: 'y' }, 'Fy'],
+      ['(x) Fx', { x: 'y' }, '(x) Fx'],
+      ['F2xx', { x: 'y' }, 'F2yy'],
+      ['F2xy', { x: 'y', y: 'x' }, 'F2yx'],
+      ['(F2xy -> ~G2yx) & [x] F2yx', { x: 'y', y: 'z' }, '(F2yz -> ~G2zy) & [x] F2zx']
     ])('for %p and %p returns %p', (formulaTxt, substitutionsRaw, expectedFormulaTxt) => {
       const formula = parser.parseRootFormula(formulaTxt)
       const expectedFormula = parser.parseRootFormula(expectedFormulaTxt)
