@@ -1,19 +1,20 @@
 import { createVarBimap, equals, isBimapDuplicateValuesError } from '../../utilities'
+import { formulaComparingVisitorTrait } from './formula-comparing-visitor-trait'
 
 /**
  * Creates an expression visitor which checks whether this and other expression are isomorphic.
- * @param formula - The reference expression which will be checked for isomorphism against the
+ * @param expression - The reference expression which will be checked for isomorphism against the
  * visited one. Isomorphism is a symmetric relation, so it is not important which expression is the
  * reference expression and which is the visited one.
  */
-export function createIsomorphismCheckingVisitor (formula) {
+export function createIsomorphismCheckingVisitor (expression) {
   const that = Object.create(isomorphismCheckingVisitorTrait)
 
   /**
    * A stack whose head is the reference expression against which visited one is checked for
    * isomorphism.
    */
-  that._refExpressionStack = [formula]
+  that._refExpressionStack = [expression]
 
   /** Bijection between reference expression variables and visited expression variables. */
   that._bimap = createVarBimap()
@@ -22,6 +23,7 @@ export function createIsomorphismCheckingVisitor (formula) {
 }
 
 const isomorphismCheckingVisitorTrait = {
+  ...formulaComparingVisitorTrait,
   visitBinaryFormula (formula) {
     const refFormula = this.refExpression()
 
@@ -134,23 +136,6 @@ const isomorphismCheckingVisitorTrait = {
           refTerm,
           () => visTerm.accept(this))
       })
-  },
-  /**
-   * Executes the action in the context of reference expression as head of the stack.
-   * @private
-   */
-  doWithRefExpression (refExpression, action) {
-    this._refExpressionStack.push(refExpression)
-    const result = action()
-    this._refExpressionStack.pop()
-    return result
-  },
-  /**
-   * Returns the head of the reference expression stack.
-   * @private
-   */
-  refExpression () {
-    return this._refExpressionStack[this._refExpressionStack.length - 1]
   },
   /**
    * Adds the mapping between reference and visited variable.

@@ -7,6 +7,9 @@ import { BinaryOperator } from './structures/symbols'
 import { createExpressionTypeVisitor } from './algorithms/expression-type-visitor'
 import { equals } from '../utilities'
 import { createIsomorphismCheckingVisitor } from './algorithms/isomorphism-checking-visitor'
+import {
+  createFreeIndVarSubstitutionFinderVisitor
+} from './algorithms/free-ind-var-substitution-finder-visitor'
 
 export const expressionTrait = {
   /** Returns an enum value representing the type of expression. */
@@ -36,6 +39,15 @@ export const expressionTrait = {
   isIsomorphicTo (other) {
     const visitor = createIsomorphismCheckingVisitor(other)
     return this.accept(visitor)
+  },
+  /**
+   * Finds a substitution of free individual variable which would turn `this` into `expression`. If
+   * expressions are the same it returns `undefined` since no substitution is necessary.
+   * @throws Throws an error if expressions are not the same and such substitution is not possible.
+   */
+  findFreeIndVarSubstitution (formula) {
+    const visitor = createFreeIndVarSubstitutionFinderVisitor(this)
+    return formula.accept(visitor)
   },
   /**
    * Compares two expression for equality.

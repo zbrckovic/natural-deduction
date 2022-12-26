@@ -152,4 +152,21 @@ describe('formula', () => {
       expect(result).toBe(false)
     })
   })
+
+  describe('findFreeIndVarSubstitution()', () => {
+    test.each([
+      ['A', 'A', undefined],
+      ['Fx', 'Fx', undefined],
+      ['F2xy', 'F2xx', ['y', 'x']],
+      ['F2xx', 'F2yy', ['x', 'y']],
+      ['(x) Fx', '(x) Fx', undefined],
+      ['(z) F2xz -> [x] Gx', '(z) F2yz -> [x] Gx', ['x', 'y']]
+    ])('for formulas %p for %p returns %p', (formula1Txt, formula2Txt, substitutionsRaw) => {
+      const formula1 = parser.parseRootFormula(formula1Txt)
+      const formula2 = parser.parseRootFormula(formula2Txt)
+      const expectedSubstitution = substitutionsRaw?.map(createVariable)
+      const substitution = formula1.findFreeIndVarSubstitution(formula2)
+      expect(substitution).toDeepEqual(expectedSubstitution)
+    })
+  })
 })
