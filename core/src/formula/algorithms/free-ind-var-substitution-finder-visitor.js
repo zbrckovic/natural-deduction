@@ -35,7 +35,7 @@ export function createFreeIndVarSubstitutionFinderVisitor (expression) {
 const freeIndVarSubstitutionFinderVisitorTrait = {
   ...expressionComparingVisitorTrait,
   ...bindTrackingTrait,
-  result() {
+  result () {
     if (this._refIndVar !== undefined) {
       return [this._refIndVar, this._visIndVar]
     } else {
