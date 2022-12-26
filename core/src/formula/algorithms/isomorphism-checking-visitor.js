@@ -1,4 +1,4 @@
-import { createVarBimap, equals, isBimapDuplicateValuesError } from '../../utilities'
+import { DuplicateValuesError, createVarBimap, equals } from '../../utilities'
 import { formulaComparingVisitorTrait } from './formula-comparing-visitor-trait'
 
 /**
@@ -83,7 +83,7 @@ const isomorphismCheckingVisitorTrait = {
         this.registerMapping(prevRefIndVar, visIndVar)
       }
     } catch (error) {
-      if (isAssociationError(error)) {
+      if (error instanceof AssociationError) {
         return false
       } else {
         throw error
@@ -101,8 +101,11 @@ const isomorphismCheckingVisitorTrait = {
     try {
       this.registerMapping(refFormula.predVar(), formula.predVar())
     } catch (error) {
-      if (isAssociationError(error) || isBimapDuplicateValuesError(error)) return false
-      throw error
+      if (error instanceof AssociationError || error instanceof DuplicateValuesError) {
+        return false
+      } else {
+        throw error
+      }
     }
 
     return refFormula
@@ -124,7 +127,7 @@ const isomorphismCheckingVisitorTrait = {
     try {
       this.registerMapping(refTerm.termVar(), term.termVar())
     } catch (error) {
-      if (isAssociationError(error)) return false
+      if (error instanceof AssociationError) return false
       throw error
     }
 
@@ -146,7 +149,7 @@ const isomorphismCheckingVisitorTrait = {
     const prevVisVar = this._bimap.get(refVar)
     if (prevVisVar !== undefined && !equals(prevVisVar, visVar)) {
       // Reference variable has already been associated to some other variable.
-      throw createAssociationError(refVar, visVar, prevVisVar)
+      throw new AssociationError(refVar, visVar, prevVisVar)
     } else {
       this._bimap.set(refVar, visVar)
     }
@@ -157,24 +160,14 @@ const isomorphismCheckingVisitorTrait = {
   }
 }
 
-const {
-  createAssociationError,
-  isAssociationError
-} = (() => {
-  const ASSOCIATION_ERROR = Symbol('ASSOCIATION ERROR')
-
-  const createAssociationError = function (refVar, visVar, prevVisVar) {
-    const result = new Error(
+class AssociationError extends Error {
+  constructor (refVar, visVar, prevVisVar) {
+    super(
       `attempted to associate ${refVar} to ${visVar} while ${refVar} has ` +
       `already been associated to ${prevVisVar}.`
     )
-    result[ASSOCIATION_ERROR] = true
-    return result
+    this.refVar = refVar
+    this.visVar = visVar
+    this.prevVisVar = prevVisVar
   }
-
-  function isAssociationError (error) {
-    return error[ASSOCIATION_ERROR] === true
-  }
-
-  return { createAssociationError, isAssociationError }
-})()
+}

@@ -1,4 +1,4 @@
-import { createBimap } from '../src/utilities'
+import { createBimap, DuplicateValuesError } from '../src/utilities'
 
 describe('bimap', () => {
   let map
@@ -37,7 +37,7 @@ describe('bimap', () => {
       map.set('x', 'y')
       expect(() => {
         map.set('x2', 'y')
-      }).toThrow()
+      }).toThrow(DuplicateValuesError)
     })
   })
 

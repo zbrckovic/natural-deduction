@@ -1,6 +1,7 @@
 /**
  * Creates a bidirectional map which maintains a bijection between keys and values. Keys and values
  * must be strings.
+ * @throws {DuplicateValuesError}
  */
 export function createBimap () {
   const that = Object.create(bimapTrait)
@@ -24,7 +25,7 @@ const bimapTrait = {
       // The value already exists.
       if (oldKey !== key) {
         // The value is already associated with some other key.
-        throw createDuplicateValuesError(oldKey, value)
+        throw new DuplicateValuesError(oldKey, value)
       } else {
         // The value is already associated with this key so there's nothing left to do.
       }
@@ -65,23 +66,10 @@ const bimapTrait = {
   }
 }
 
-const {
-  createDuplicateValuesError,
-  isBimapDuplicateValuesError
-} = (() => {
-  const DUPLICATE_VALUES_ERROR = Symbol('DUPLICATE_VALUES_ERROR')
-
-  function createDuplicateValuesError (key, value) {
-    const error = new Error(`value ${value} already associated with key ${key}`)
-    error[DUPLICATE_VALUES_ERROR] = true
-    return error
+export class DuplicateValuesError extends Error {
+  constructor (key, value) {
+    super(`value ${value} already associated with key ${key}`)
+    this.key = key
+    this.value = value
   }
-
-  function isBimapDuplicateValuesError (error) {
-    return Object.hasOwnProperty.call(error, DUPLICATE_VALUES_ERROR)
-  }
-
-  return { createDuplicateValuesError, isBimapDuplicateValuesError }
-})()
-
-export { isBimapDuplicateValuesError }
+}
