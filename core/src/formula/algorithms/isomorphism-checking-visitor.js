@@ -83,7 +83,7 @@ const isomorphismCheckingVisitorTrait = {
         this.registerMapping(prevRefIndVar, visIndVar)
       }
     } catch (error) {
-      if (error instanceof AssociationError) {
+      if (error instanceof AssociationError || error instanceof DuplicateValuesError) {
         return false
       } else {
         throw error
@@ -127,7 +127,7 @@ const isomorphismCheckingVisitorTrait = {
     try {
       this.registerMapping(refTerm.termVar(), term.termVar())
     } catch (error) {
-      if (error instanceof AssociationError) return false
+      if (error instanceof AssociationError || error instanceof DuplicateValuesError) return false
       throw error
     }
 

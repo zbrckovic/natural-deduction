@@ -8,7 +8,7 @@ import { createExpressionTypeVisitor } from './algorithms/expression-type-visito
 import { equals } from '../utilities'
 import { createIsomorphismCheckingVisitor } from './algorithms/isomorphism-checking-visitor'
 import {
-  createFreeIndVarSubstitutionFinderVisitor
+  createFreeIndVarSubstitutionFinderVisitor, FreeIndVarSubstitutionFinderVisitorError
 } from './algorithms/free-ind-var-substitution-finder-visitor'
 
 export const expressionTrait = {
@@ -47,7 +47,15 @@ export const expressionTrait = {
    */
   findFreeIndVarSubstitution (formula) {
     const visitor = createFreeIndVarSubstitutionFinderVisitor(this)
-    formula.accept(visitor)
+    try {
+      formula.accept(visitor)
+    } catch (error) {
+      if (error instanceof FreeIndVarSubstitutionFinderVisitorError) {
+        return undefined
+      } else {
+        throw error
+      }
+    }
     return visitor.result()
   },
   /**

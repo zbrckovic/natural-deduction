@@ -58,7 +58,7 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
 
     // Confirm that expressions are comparable.
     if (refFormula.type() !== formula.type() || refFormula.operator() !== formula.operator()) {
-      throw FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
+      throw new FreeIndVarSubstitutionFinderVisitorError('formulas not comparable')
     }
 
     this.doWithRefExpression(refFormula.formula(), () => formula.formula().accept(this))
@@ -153,7 +153,7 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
         this._visIndVar = visIndVar
       } else {
         // Some variable has already been registered.
-        if (!equals(refIndVar, refIndVar)) {
+        if (!equals(this._refIndVar, refIndVar)) {
           throw new FreeIndVarSubstitutionFinderVisitorError(
             'expressions differ in more than one variable'
           )

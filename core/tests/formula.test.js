@@ -64,7 +64,8 @@ describe('formula', () => {
       ['[x] Fx', []],
       ['(x) F2xy', ['y']],
       ['(x) (x) Fx', []],
-      ['Fx -> Gy', ['x', 'y']]
+      ['Fx -> Gy', ['x', 'y']],
+      ['(x) F(f(x, y))', ['y']]
     ])('for %p returns variables %p', (formulaTxt, expectedIndVarsRaw) => {
       const formula = parser.parseRootFormula(formulaTxt)
 
@@ -86,6 +87,7 @@ describe('formula', () => {
       ['Fx', { x: 'x' }, 'Fx'],
       ['Fx', { x: 'y' }, 'Fy'],
       ['(x) Fx', { x: 'y' }, '(x) Fx'],
+      ['F(f(x, y))', { x: 'y', y: 'x' }, 'F(f(y, x))'],
       ['F2xx', { x: 'y' }, 'F2yy'],
       ['F2xy', { x: 'y', y: 'x' }, 'F2yx'],
       ['(F2xy -> ~G2yx) & [x] F2yx', { x: 'y', y: 'z' }, '(F2yz -> ~G2zy) & [x] F2zx']
@@ -106,17 +108,19 @@ describe('formula', () => {
     test.each([
       ['[x] F2xy', { y: 'x' }],
       ['(x) [y] (F2xy -> ~Gz)', { z: 'x' }]
-    ])('for %p and %p throws', (formulaTxt, substitutionsRaw) => {
-      const formula = parser.parseRootFormula(formulaTxt)
+    ])(
+      `for %p and %p throws ${ErrorCode.VARIABLE_BECOMES_BOUND}`,
+      (formulaTxt, substitutionsRaw) => {
+        const formula = parser.parseRootFormula(formulaTxt)
 
-      const substitutions = {}
-      Object.entries(substitutionsRaw).forEach(([id, substituteId]) => {
-        substitutions[id] = createVariable(substituteId)
+        const substitutions = {}
+        Object.entries(substitutionsRaw).forEach(([id, substituteId]) => {
+          substitutions[id] = createVariable(substituteId)
+        })
+
+        expect(() => { formula.substituteFreeIndVars(substitutions) })
+          .toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_BECOMES_BOUND))
       })
-
-      expect(() => { formula.substituteFreeIndVars(substitutions) })
-        .toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_BECOMES_BOUND))
-    })
   })
 
   describe('isIsomorphicTo()', () => {
@@ -144,7 +148,8 @@ describe('formula', () => {
       ['F2xy', 'F2xx'],
       ['F(f(x, y))', 'F(g(y, y))'],
       ['(x) Fx', '[x] Fx'],
-      ['(x) [y] F2xy', '(y) [x] F2xy']
+      ['(x) [y] F2xy', '(y) [x] F2xy'],
+      ['F(f(x), f(y))', 'F(g(x), f(y))']
     ])('returns false for %p and %p', (formula1Txt, formula2Txt) => {
       const formula1 = parser.parseRootFormula(formula1Txt)
       const formula2 = parser.parseRootFormula(formula2Txt)
@@ -154,19 +159,47 @@ describe('formula', () => {
   })
 
   describe('findFreeIndVarSubstitution()', () => {
-    test.each([
-      ['A', 'A', undefined],
-      ['Fx', 'Fx', undefined],
-      ['F2xy', 'F2xx', ['y', 'x']],
-      ['F2xx', 'F2yy', ['x', 'y']],
-      ['(x) Fx', '(x) Fx', undefined],
-      ['(z) F2xz -> [x] Gx', '(z) F2yz -> [x] Gx', ['x', 'y']]
-    ])('for formulas %p for %p returns %p', (formula1Txt, formula2Txt, substitutionsRaw) => {
-      const formula1 = parser.parseRootFormula(formula1Txt)
-      const formula2 = parser.parseRootFormula(formula2Txt)
-      const expectedSubstitution = substitutionsRaw?.map(id => createVariable(id))
-      const substitution = formula1.findFreeIndVarSubstitution(formula2)
-      expect(substitution).toDeepEqual(expectedSubstitution)
+    describe('for comparable formulas', () => {
+      test.each([
+        ['A', 'A', undefined],
+        ['Fx', 'Fx', undefined],
+        ['F(f(x))', 'F(f(y))', ['x', 'y']],
+        ['~Fx', '~Fy', ['x', 'y']],
+        ['F(f(x, y))', 'F(f(y, y))', ['x', 'y']],
+        ['F2xy', 'F2xx', ['y', 'x']],
+        ['F2xx', 'F2yy', ['x', 'y']],
+        ['(x) Fx', '(x) Fx', undefined],
+        ['(z) F2xz -> [x] Gx', '(z) F2yz -> [x] Gx', ['x', 'y']]
+      ])('%p and %p returns %p', (formula1Txt, formula2Txt, substitutionsRaw) => {
+        const formula1 = parser.parseRootFormula(formula1Txt)
+        const formula2 = parser.parseRootFormula(formula2Txt)
+        const expectedSubstitution = substitutionsRaw?.map(id => createVariable(id))
+        const substitution = formula1.findFreeIndVarSubstitution(formula2)
+        expect(substitution).toDeepEqual(expectedSubstitution)
+      })
+    })
+
+    describe('for un-comparable formulas', () => {
+      test.each([
+        ['A -> B', 'A & B'],
+        ['A', '~A'],
+        ['(x) A', '[x] A'],
+        ['(x) A', '(y) A'],
+        ['A', 'Fx'],
+        ['Fx', 'F(f(x))'],
+        ['(x) Fx', '(x) Fy'],
+        ['F(f(x))', 'F(g(x))'],
+        ['(z) Fxy', '(z) Fxz'],
+        ['Fxx', 'Fax'],
+        ['Fxx', 'Fxa'],
+        ['Fxy', 'Fab'],
+        ['Fxx', 'Fab']
+      ])('%p and %p returns undefined', (formula1Txt, formula2Txt) => {
+        const formula1 = parser.parseRootFormula(formula1Txt)
+        const formula2 = parser.parseRootFormula(formula2Txt)
+        const substitution = formula1.findFreeIndVarSubstitution(formula2)
+        expect(substitution).toBeUndefined()
+      })
     })
   })
 })
