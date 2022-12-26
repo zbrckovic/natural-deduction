@@ -127,6 +127,7 @@ const freeIndVarSubstitutionFinderVisitorTrait = {
       }
     }
   },
+  /** @private */
   registerFreeIndVars (refIndVar, visIndVar) {
     if (this.isBound(visIndVar)) {
       throw new FreeIndVarSubstitutionFinderVisitorError('substitute becomes bound')
