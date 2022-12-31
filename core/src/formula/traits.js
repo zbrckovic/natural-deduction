@@ -10,6 +10,7 @@ import { createIsomorphismCheckingVisitor } from './algorithms/isomorphism-check
 import {
   createFreeIndVarSubstitutionFinderVisitor, FreeIndVarSubstitutionFinderVisitorError
 } from './algorithms/free-ind-var-substitution-finder-visitor'
+import { createPredVarsSubstitutionVisitor } from './algorithms/pred-var-substitution-visitor'
 
 export const expressionTrait = {
   /** Returns an enum value representing the type of expression. */
@@ -57,6 +58,10 @@ export const expressionTrait = {
       }
     }
     return visitor.result()
+  },
+  substitutePredVars (...substitutions) {
+    const visitor = createPredVarsSubstitutionVisitor(...substitutions)
+    return this.accept(visitor)
   },
   /**
    * Compares two expression for equality.

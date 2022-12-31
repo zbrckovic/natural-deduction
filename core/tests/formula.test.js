@@ -1,6 +1,10 @@
 import { createParser } from './parser'
 import { createAtomicFormula, createTerm, createVariable } from '../src/formula'
 import { createErrorRegexForTest, ErrorCode } from '../src/errors'
+import {
+  createSubstituteTemplate, SubstituteBecomesBound,
+  SubstituteBindsExternalIndVarException
+} from '../src/formula/algorithms/pred-var-substitution-visitor'
 
 describe('formula', () => {
   let parser
@@ -201,5 +205,65 @@ describe('formula', () => {
         expect(substitution).toBeUndefined()
       })
     })
+  })
+
+  describe('substitutePredVars()', () => {
+    describe('for valid cases', () => {
+      test.each([
+        ['A', {}, 'A'],
+        ['A', { A: 'B' }, 'B'],
+        ['A', { A: 'A -> B' }, 'A -> B'],
+        ['A -> B', { A: 'B', B: 'A' }, 'B -> A'],
+        ['Fx', { Fx: 'A -> B' }, 'A -> B'],
+        ['Fx', { Fy: 'Gy' }, 'Gx'],
+        ['F2xy', { F2xy: 'F2yx' }, 'F2yx'],
+        ['F2xx', { F2xy: 'G2yx' }, 'G2xx'],
+        ['[x] (Fx -> Gx)', { Fy: 'A -> Gy', Gx: 'Fx' }, '[x] ((A -> Gx) -> Fx)']
+      ])('%p and %p returns %p', (formulaTxt, substitutionsRaw, expectedFormulaTxt) => {
+        const formula = parser.parseRootFormula(formulaTxt)
+        const substitutions = createSubstitutions(substitutionsRaw)
+        const expectedFormula = parser.parseRootFormula(expectedFormulaTxt)
+        const resultingFormula = formula.substitutePredVars(...substitutions)
+        expect(resultingFormula).toDeepEqual(expectedFormula)
+      })
+    })
+
+    describe('throws SubstituteBindsExternalIndVarException', () => {
+      test.each([
+        ['Fx', { Fy: '(x) Fy' }],
+        ['(x) Fx', { Fy: '(x) Fy' }]
+      ])('for %p and %p', (formulaTxt, substitutionsRaw) => {
+        const formula = parser.parseRootFormula(formulaTxt)
+        const substitutions = createSubstitutions(substitutionsRaw)
+        expect(() => {
+          formula.substitutePredVars(...substitutions)
+        }).toThrow(SubstituteBindsExternalIndVarException)
+      })
+    })
+
+    describe('throws SubstituteBecomesBound', () => {
+      test.each([
+        ['[x] A', { A: 'Fx' }],
+        ['(y) F2yx', { F2xz: 'G2xy' }]
+      ])('for %p and %p', (formulaTxt, substitutionsRaw) => {
+        const formula = parser.parseRootFormula(formulaTxt)
+        const substitutions = createSubstitutions(substitutionsRaw)
+        expect(() => {
+          formula.substitutePredVars(...substitutions)
+        }).toThrow(SubstituteBecomesBound)
+      })
+    })
+
+    function createSubstitutions (substitutionsRaw) {
+      return Object
+        .entries(substitutionsRaw)
+        .map(([atomicFormulaTxt, substituteFormulaTxt]) => {
+          const atomicFormula = parser.parseRootFormula(atomicFormulaTxt)
+          const substituteFormula = parser.parseRootFormula(substituteFormulaTxt)
+          const placeholderVars = atomicFormula.terms().map(term => term.termVar())
+          const substituteTemplate = createSubstituteTemplate(substituteFormula, placeholderVars)
+          return [atomicFormula.predVar(), substituteTemplate]
+        })
+    }
   })
 })
