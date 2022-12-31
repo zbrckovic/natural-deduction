@@ -1,6 +1,6 @@
 import { areUnique } from '../../utilities'
-import { ExpressionType } from '../structures/expression-type'
 import { bindTrackingTrait } from './bind-tracking-trait'
+import { ErrorCode } from '../../errors'
 
 /**
  * Substitutes occurrences or predicate variables.
@@ -18,6 +18,7 @@ export function createPredVarsSubstitutionVisitor (substitutions) {
    * instantiate a formula for each occurrence of the predicate variable.
    */
   that._substitutions = substitutions
+  that._boundVars = {}
 
   return that
 }
@@ -71,7 +72,6 @@ const predVarsSubstitutionTrait = {
 
 export const createSubstituteTemplate = (() => {
   function create (formula, ...placeholders) {
-    confirmFormulaIsAtomic(formula)
     confirmPlaceholdersAreIndVars(placeholders)
     confirmPlaceholdersAreUnique(placeholders)
 
@@ -95,7 +95,15 @@ export const createSubstituteTemplate = (() => {
       this._placeholders.forEach((placeholder, i) => {
         substitutions[placeholder.id()] = indVars[i]
       })
-      return this._formula.substituteFreeIndVars(substitutions)
+      try {
+        return this._formula.substituteFreeIndVars(substitutions)
+      } catch (error) {
+        if (error.code === ErrorCode.VARIABLE_BECOMES_BOUND) {
+          throw new SubstituteBindsExternalIndVarException()
+        } else {
+          throw error
+        }
+      }
     },
     freeIndVars () {
       return this._freeIndVars
@@ -104,14 +112,8 @@ export const createSubstituteTemplate = (() => {
 
   return create
 
-  function confirmFormulaIsAtomic (formula) {
-    if (formula.type() !== ExpressionType.ATOMIC_FORMULA) {
-      throw new Error('formula not atomic')
-    }
-  }
-
   function confirmPlaceholdersAreIndVars (placeholders) {
-    if (!placeholders.every(placeholder => placeholder.isIndVar())) {
+    if (!placeholders.every(placeholder => placeholder.arity() === 0)) {
       throw new Error('placeholder not individual variable')
     }
   }
