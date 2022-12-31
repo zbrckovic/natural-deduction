@@ -59,8 +59,8 @@ export const expressionTrait = {
     }
     return visitor.result()
   },
-  substitutePredVars (...substitutions) {
-    const visitor = createPredVarsSubstitutionVisitor(...substitutions)
+  substitutePredVars (substitutions) {
+    const visitor = createPredVarsSubstitutionVisitor(substitutions)
     return this.accept(visitor)
   },
   /**

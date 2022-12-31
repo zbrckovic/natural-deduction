@@ -1,6 +1,9 @@
 import {
   forwardRef as freeIndVarsSubstitutionVisitorForwardRef
 } from '../algorithms/free-ind-vars-substitution-visitor'
+import {
+  forwardRef as predVarSubstitutionVistiorForwardRef
+} from '../algorithms/pred-var-substitution-visitor'
 import { formulaTrait, forwardRef as formulaForwardRef } from '../traits'
 
 export function createBinaryFormula (operator, lFormula, rFormula) {
@@ -32,3 +35,4 @@ const binaryFormulaTrait = {
 
 formulaForwardRef.createBinaryFormula = createBinaryFormula
 freeIndVarsSubstitutionVisitorForwardRef.createBinaryFormula = createBinaryFormula
+predVarSubstitutionVistiorForwardRef.createBinaryFormula = createBinaryFormula

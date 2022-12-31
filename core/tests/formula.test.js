@@ -2,7 +2,8 @@ import { createParser } from './parser'
 import { createAtomicFormula, createTerm, createVariable } from '../src/formula'
 import { createErrorRegexForTest, ErrorCode } from '../src/errors'
 import {
-  createSubstituteTemplate, SubstituteBecomesBound,
+  createSubstituteTemplate,
+  SubstituteBecomesBound,
   SubstituteBindsExternalIndVarException
 } from '../src/formula/algorithms/pred-var-substitution-visitor'
 
@@ -223,7 +224,7 @@ describe('formula', () => {
         const formula = parser.parseRootFormula(formulaTxt)
         const substitutions = createSubstitutions(substitutionsRaw)
         const expectedFormula = parser.parseRootFormula(expectedFormulaTxt)
-        const resultingFormula = formula.substitutePredVars(...substitutions)
+        const resultingFormula = formula.substitutePredVars(substitutions)
         expect(resultingFormula).toDeepEqual(expectedFormula)
       })
     })
@@ -236,7 +237,7 @@ describe('formula', () => {
         const formula = parser.parseRootFormula(formulaTxt)
         const substitutions = createSubstitutions(substitutionsRaw)
         expect(() => {
-          formula.substitutePredVars(...substitutions)
+          formula.substitutePredVars(substitutions)
         }).toThrow(SubstituteBindsExternalIndVarException)
       })
     })
@@ -249,21 +250,23 @@ describe('formula', () => {
         const formula = parser.parseRootFormula(formulaTxt)
         const substitutions = createSubstitutions(substitutionsRaw)
         expect(() => {
-          formula.substitutePredVars(...substitutions)
+          formula.substitutePredVars(substitutions)
         }).toThrow(SubstituteBecomesBound)
       })
     })
 
     function createSubstitutions (substitutionsRaw) {
-      return Object
+      const result = {}
+      Object
         .entries(substitutionsRaw)
-        .map(([atomicFormulaTxt, substituteFormulaTxt]) => {
+        .forEach(([atomicFormulaTxt, substituteFormulaTxt]) => {
           const atomicFormula = parser.parseRootFormula(atomicFormulaTxt)
           const substituteFormula = parser.parseRootFormula(substituteFormulaTxt)
           const placeholderVars = atomicFormula.terms().map(term => term.termVar())
-          const substituteTemplate = createSubstituteTemplate(substituteFormula, placeholderVars)
-          return [atomicFormula.predVar(), substituteTemplate]
+          result[atomicFormula.predVar()] =
+            createSubstituteTemplate(substituteFormula, ...placeholderVars)
         })
+      return result
     }
   })
 })

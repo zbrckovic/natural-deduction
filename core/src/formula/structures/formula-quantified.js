@@ -1,4 +1,9 @@
-import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
+import {
+  forwardRef as freeIndVarsSubstitutionVisitorForwardRef
+} from '../algorithms/free-ind-vars-substitution-visitor'
+import {
+  forwardRef as predVarSubstitutionVistiorForwardRef
+} from '../algorithms/pred-var-substitution-visitor'
 import { formulaTrait } from '../traits'
 
 export function createQuantifiedFormula (quantifier, indVar, formula) {
@@ -28,4 +33,5 @@ const quantifiedFormulaTrait = {
   }
 }
 
-forwardRef.createQuantifiedFormula = createQuantifiedFormula
+freeIndVarsSubstitutionVisitorForwardRef.createQuantifiedFormula = createQuantifiedFormula
+predVarSubstitutionVistiorForwardRef.createQuantifiedFormula = createQuantifiedFormula

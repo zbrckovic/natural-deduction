@@ -1,4 +1,9 @@
-import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
+import {
+  forwardRef as freeIndVarsSubstitutionVisitorForwardRef
+} from '../algorithms/free-ind-vars-substitution-visitor'
+import {
+  forwardRef as predVarSubstitutionVistiorForwardRef
+} from '../algorithms/pred-var-substitution-visitor'
 import { formulaTrait } from '../traits'
 
 export function createUnaryFormula (operator, formula) {
@@ -24,4 +29,5 @@ const unaryFormulaTrait = {
   }
 }
 
-forwardRef.createUnaryFormula = createUnaryFormula
+freeIndVarsSubstitutionVisitorForwardRef.createUnaryFormula = createUnaryFormula
+predVarSubstitutionVistiorForwardRef.createUnaryFormula = createUnaryFormula
