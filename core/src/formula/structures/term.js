@@ -1,5 +1,5 @@
 import { createVariable } from './variable'
-import { createError, ErrorCode } from '../../errors'
+import { InvalidArityError } from '../../errors'
 import { expressionTrait } from '../traits'
 import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
 
@@ -48,7 +48,7 @@ const termTrait = {
 
 function assertArityMatches (termVar, terms) {
   if (termVar.arity() !== terms.length) {
-    throw createError(ErrorCode.INVALID_ARITY, 'invalid arity')
+    throw new InvalidArityError()
   }
 }
 

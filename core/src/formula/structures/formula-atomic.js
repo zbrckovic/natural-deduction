@@ -1,6 +1,6 @@
 import { createVariable } from './variable'
 import { createTerm } from './term'
-import { createError, ErrorCode } from '../../errors'
+import { InvalidArityError } from '../../errors'
 import { forwardRef } from '../algorithms/free-ind-vars-substitution-visitor'
 import { formulaTrait } from '../traits'
 
@@ -47,7 +47,7 @@ const atomicFormulaTrait = {
 
 function assertArityMatches (predVar, terms) {
   if (predVar.arity() !== terms.length) {
-    throw createError(ErrorCode.INVALID_ARITY, 'invalid arity')
+    throw new InvalidArityError()
   }
 }
 

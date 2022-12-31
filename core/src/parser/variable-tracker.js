@@ -1,5 +1,5 @@
 import { equals } from '../utilities'
-import { createError, ErrorCode } from '../errors'
+import { VariableCollisionError } from '../errors'
 
 /**
  * Tracks variables and takes care not to allow registration of conflicting variables: unequal
@@ -19,10 +19,7 @@ export class VariableTracker {
       this._idToVar[variable.id()] = variable
     } else {
       if (!equals(existingVariable, variable)) {
-        throw createError(
-          ErrorCode.VARIABLE_COLLISION,
-          `cannot register variable ${variable} as it has the same id as already registered ` +
-          `variable ${existingVariable}`)
+        throw new VariableCollisionError(variable, existingVariable)
       }
     }
   }

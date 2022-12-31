@@ -1,19 +1,20 @@
-export const ErrorCode = {
-  VARIABLE_COLLISION: 0,
-  INVALID_ARITY: 1,
-  VARIABLE_BECOMES_BOUND: 2
+export class VariableBecomesIllegallyBoundError extends Error {
+  constructor () {
+    super('variable becomes illegally bound')
+  }
 }
 
-/**
- * This is the main error creating function of the whole library.
- */
-export function createError (code, message) {
-  const error = new Error(`ERR(${code}): ${message}`)
-  error.code = code
-  return error
+export class InvalidArityError extends Error {
+  constructor () {
+    super('invalid arity')
+  }
 }
 
-/** Creates a regex which unit tests use to assert whether a specific error has been thrown. */
-export function createErrorRegexForTest (code) {
-  return new RegExp(`^ERR\\(${code}\\)`)
+export class VariableCollisionError extends Error {
+  constructor (variable, existingVariable) {
+    super(
+      `cannot register variable ${variable} as it has the same id as already registered ` +
+      `variable ${existingVariable}`
+    )
+  }
 }

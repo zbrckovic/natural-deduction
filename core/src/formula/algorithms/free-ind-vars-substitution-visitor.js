@@ -1,5 +1,5 @@
 import { bindTrackingTrait } from './bind-tracking-trait'
-import { createError, ErrorCode } from '../../errors'
+import { VariableBecomesIllegallyBoundError } from '../../errors'
 
 /** Creates an expression visitor which performs a free individual variable substitution. */
 export function createFreeIndVarsSubstitutionVisitor (substitutions) {
@@ -56,7 +56,7 @@ export const freeIndVarsSubstitutionVisitorTrait = {
     const substitute = this._substitutions[indVar.id()]
     if (substitute === undefined) return indVar
     if (this.isBound(substitute)) {
-      throw createError(ErrorCode.VARIABLE_BECOMES_BOUND, 'substitute becomes bound')
+      throw new VariableBecomesIllegallyBoundError()
     }
     return substitute
   }

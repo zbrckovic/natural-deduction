@@ -1,6 +1,6 @@
 import { areUnique } from '../../utilities'
 import { bindTrackingTrait } from './bind-tracking-trait'
-import { ErrorCode } from '../../errors'
+import { VariableBecomesIllegallyBoundError } from '../../errors'
 
 /**
  * Substitutes occurrences or predicate variables.
@@ -98,8 +98,8 @@ export const createSubstituteTemplate = (() => {
       try {
         return this._formula.substituteFreeIndVars(substitutions)
       } catch (error) {
-        if (error.code === ErrorCode.VARIABLE_BECOMES_BOUND) {
-          throw new SubstituteBindsExternalIndVarException()
+        if (error instanceof VariableBecomesIllegallyBoundError) {
+          throw new SubstituteBindsExternalIndVarError()
         } else {
           throw error
         }
@@ -142,7 +142,7 @@ export class SubstituteBecomesBound extends Error {
 }
 
 /** When substitute binds an external individual variable. */
-export class SubstituteBindsExternalIndVarException extends Error {
+export class SubstituteBindsExternalIndVarError extends Error {
   constructor () {
     super('substitute binds external individual variable')
   }

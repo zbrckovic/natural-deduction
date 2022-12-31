@@ -1,10 +1,10 @@
 import { createParser } from './parser'
 import { createAtomicFormula, createTerm, createVariable } from '../src/formula'
-import { createErrorRegexForTest, ErrorCode } from '../src/errors'
+import { InvalidArityError, VariableBecomesIllegallyBoundError } from '../src/errors'
 import {
   createSubstituteTemplate,
   SubstituteBecomesBound,
-  SubstituteBindsExternalIndVarException
+  SubstituteBindsExternalIndVarError
 } from '../src/formula/algorithms/pred-var-substitution-visitor'
 
 describe('formula', () => {
@@ -17,7 +17,7 @@ describe('formula', () => {
     it('throws when predVar arity doesn\'t match the terms count', () => {
       expect(() => {
         createAtomicFormula(createVariable('F', 1), 'x', 'y')
-      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
+      }).toThrow(InvalidArityError)
     })
   })
 
@@ -25,7 +25,7 @@ describe('formula', () => {
     it('throws when termVar arity doesn\'t match the terms count', () => {
       expect(() => {
         createTerm(createVariable('f', 1), 'x', 'y')
-      }).toThrow(createErrorRegexForTest(ErrorCode.INVALID_ARITY))
+      }).toThrow(InvalidArityError)
     })
   })
 
@@ -113,19 +113,16 @@ describe('formula', () => {
     test.each([
       ['[x] F2xy', { y: 'x' }],
       ['(x) [y] (F2xy -> ~Gz)', { z: 'x' }]
-    ])(
-      `for %p and %p throws ${ErrorCode.VARIABLE_BECOMES_BOUND}`,
-      (formulaTxt, substitutionsRaw) => {
-        const formula = parser.parseRootFormula(formulaTxt)
+    ])('for %p and %p throws VariableBecomesBound', (formulaTxt, substitutionsRaw) => {
+      const formula = parser.parseRootFormula(formulaTxt)
 
-        const substitutions = {}
-        Object.entries(substitutionsRaw).forEach(([id, substituteId]) => {
-          substitutions[id] = createVariable(substituteId)
-        })
-
-        expect(() => { formula.substituteFreeIndVars(substitutions) })
-          .toThrow(createErrorRegexForTest(ErrorCode.VARIABLE_BECOMES_BOUND))
+      const substitutions = {}
+      Object.entries(substitutionsRaw).forEach(([id, substituteId]) => {
+        substitutions[id] = createVariable(substituteId)
       })
+
+      expect(() => { formula.substituteFreeIndVars(substitutions) }).toThrow(VariableBecomesIllegallyBoundError)
+    })
   })
 
   describe('isIsomorphicTo()', () => {
@@ -238,7 +235,7 @@ describe('formula', () => {
         const substitutions = createSubstitutions(substitutionsRaw)
         expect(() => {
           formula.substitutePredVars(substitutions)
-        }).toThrow(SubstituteBindsExternalIndVarException)
+        }).toThrow(SubstituteBindsExternalIndVarError)
       })
     })
 
